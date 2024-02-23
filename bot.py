@@ -4,7 +4,7 @@ import time
 import sys
 
 Mybot = Bot()
-Mybot.login(username="abdelali_ait_talb", password="")
+Mybot.login(username="abdelali_ait_talb", password="@ZIZali.1967")
 
 Mybot.follow("deutschlehrerin._")
 time.sleep(3)
