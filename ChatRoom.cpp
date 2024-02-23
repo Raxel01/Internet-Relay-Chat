@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/18 17:33:50 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/18 20:44:39 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/02/23 10:22:58 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void    Chatroom::ComBinePasswordTochannel(std::string& channeLine, std::string&
 {
     std::string getchannel;
     std::string getpass;
-    
     std::stringstream channelstream(channeLine);
     std::stringstream passtream(passwordLine);
     
@@ -74,6 +73,7 @@ void    Chatroom::Channelmatcher(){
     Bref::iterator Finder;
     
     Joinit = StoreJoinRequest.begin();
+    
     while (Joinit != StoreJoinRequest.end()){
         
         Finder = ChannelDatabase.find(Joinit->first);
