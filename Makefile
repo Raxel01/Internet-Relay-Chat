@@ -16,7 +16,7 @@ SERVERPATH  =  ./srcs/server
 
 CMDPATH     = ./srcs/commands
 
-SRC         =   Global_main.cpp \
+SRC         =   main.cpp \
                 $(SERVERPATH)/Server.cpp
 
 INCLUDE     =   ./headers/Server.hpp
@@ -30,7 +30,7 @@ CXXFLAGS    =   -std=c++98 -Wall -Wextra -Werror
 all : $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME) && rm $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
 %.o : %.cpp $(INCLUDE)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
