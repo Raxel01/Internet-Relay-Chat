@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/24 18:02:02 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/02/25 00:45:51 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,18 @@
 #include <list>
 
 
+#define    KICK       "KICK"
+#define    INVITE     "INVITE"
 #define    MODE       "MODE"
 #define    TOPIC      "TOPIC"
-#define    INVITE     "INVITE"
-#define    KICK       "KICK"
 #define    JOIN       "JOIN"
-#define    CONTINUE   "CONTINUE"
 #define    PART       "PART"
-#define    UNKNOW     "UNKNOW"
 #define    PONG      "PONG"
+#define    UNKNOW     "UNKNOW"
 #define    IGNORE     "IGNORE"
+#define    CONTINUE   "CONTINUE"
+
+// const char *CMD[] ={ "KICK", "INVITE", "MODE", "TOPIC", "JOIN", "PART", "PONG", "UNKNOW", "IGNORE"};
 
 // :adrift.sg.quakenet.org 421 OK LOL :Unknown command
 
@@ -53,6 +55,12 @@ void    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NI
 }
 
 typedef std::list<std::string> C_LIST ;
+
+class ChatRoomHolder{
+    
+    public :
+        std::vector<ChatRoom> ServerChannels; 
+};
 
 class ChatRoom
 {
@@ -70,7 +78,6 @@ class ChatRoom
     
 };
 
-// const char *CMD[] ={ "KICK", "JOIN", "INVITE", "TOPIC", "CONTINUE"};
 
 class ReforMessage
 {
@@ -82,8 +89,10 @@ class ReforMessage
     public :
         static std::string     FinalMessage;
         static void   GlobalReform(std::string Message);
-        static void   TriMessage(std::string &Message);
-        static void   CleanMessage(std::string &Message);
+        static void   TriMessage();
+        static void   CleanMessage();
+        static void   removeCRLF();
+        static void   Reinitializer();
 };
 
 
@@ -93,43 +102,72 @@ int               ReforMessage::flag = 0;
 int               ReforMessage::i = -1;
 std::string       ReforMessage::FinalMessage;
 
-void    ReforMessage::CleanMessage(std::string &Message){
-
-
-	std::stringstream ss;
+void    ReforMessage::CleanMessage(){
+	
+    std::stringstream ss;
     
-    while (Message[++i])
+    while (FinalMessage[++i])
 	{
-		if (Message[i] == ' ')
+		if (FinalMessage[i] == ' ')
 			flag = 1;
-		if (!(Message[i] == ' '))
+		if (!(FinalMessage[i] == ' '))
 		{
 			if (flag)
 				ss << " ";
 			flag = 0;
-			ss << Message[i];
+			ss << FinalMessage[i];
 			}
-		}
-    Message = ss.str();
+	}
+    FinalMessage.clear();
+    FinalMessage = ss.str();
+    ss.clear();
 }
 
 
-void    ReforMessage::TriMessage(std::string &Message){
-    start = Message.find_first_not_of(" ");
-    end = Message.find_last_not_of(" ");
-    
+void    ReforMessage::TriMessage(){
+    start = FinalMessage.find_first_not_of(" ");
+    end = FinalMessage.find_last_not_of(" ");
+  
     if (start != std::string::npos && end != std::string::npos){
-        Message = Message.substr(start, end - start +1);
+        FinalMessage = FinalMessage.substr(start, end - start +1);
+    }
+}
+void    ReforMessage::Reinitializer()
+{
+    start = 0;
+    end = 0;
+    flag = 0;
+    i = -1;
+    FinalMessage.clear();
+}
+void    ReforMessage::removeCRLF(){
+
+    // LimeChat end message With //\r\n
+    size_t newlinePos = FinalMessage.find('\n');
+    if (newlinePos != std::string::npos){
+        if (newlinePos != 0){ // == 0 When type Entrer in nc
+          if (FinalMessage.at(newlinePos - 1) == '\r')
+            FinalMessage.erase(newlinePos - 1);// this .....\r\n erase it => LimeChat;
+          else
+            FinalMessage.erase(newlinePos); //this .....\n erase it netcat;
+        }
+        else{
+            FinalMessage.clear();
+            FinalMessage = "";
+        }
+            
     }
 }
 
 void    ReforMessage::GlobalReform(std::string Message){
+        Reinitializer();
         FinalMessage = Message;
-        TriMessage(FinalMessage);
-        CleanMessage(FinalMessage);
+        TriMessage();
+        CleanMessage();
+        removeCRLF();
 }
 
-std::string RegularUsers(std::string& cmd){
+std::string RegularUsers(std::string& cmd,std::string& clientMsg){
     if (cmd.compare(JOIN) == 0)
         return (JOIN);
     else if (cmd.compare(PART) == 0)
@@ -139,7 +177,7 @@ std::string RegularUsers(std::string& cmd){
     return IGNORE;
 }
 
-std::string RecognizeCmd(std::string& cmd)
+std::string RecognizeCmd(std::string& cmd, std::string& clientMsg)
 {
          if (cmd.compare(KICK)   == 0)
                 return KICK;
@@ -149,7 +187,7 @@ std::string RecognizeCmd(std::string& cmd)
                 return TOPIC;
     else if (cmd.compare(MODE)   == 0)
                 return (MODE);
-    return RegularUsers(cmd);
+    return RegularUsers(cmd, clientMsg);
 }
 
 void    ChanopCommand(std::string &FullMessage)
@@ -159,8 +197,10 @@ void    ChanopCommand(std::string &FullMessage)
     
     if (std::getline(stream, ExtractCmd, ' ')){
         std::transform(ExtractCmd.begin(), ExtractCmd.end(), ExtractCmd.begin(), ::toupper);
-        std::cout << "InputCmd : |" << ExtractCmd << "|"<< std::endl;
-        RecognizeCmd(ExtractCmd);
+        std::cout << "________________________________________"<< std::endl;
+            std::cout << "RecognizedCmd |" << ExtractCmd << "|" << std::endl;
+        std::cout << "----------------------------------------"<< std::endl;
+        std::cout << "aS :" << RecognizeCmd(ExtractCmd, FullMessage) << std::endl;
     }
 }
 
@@ -206,9 +246,6 @@ std::string Client::getUserName() {
 	return this->username;
 }
 
-
-
-
 std::string& Client::toLower(std::string &str){
 	size_t i;
 
@@ -217,8 +254,6 @@ std::string& Client::toLower(std::string &str){
 		str[i] = std::tolower(str[i]);
 	return str;
 }
-
-
 
  Client &Client::operator=(const Client &client)
  {
@@ -316,12 +351,11 @@ void Server::accept_connection()
 void Server::main_loop()
 {
    // std::cout << ascii_art << std::endl;
-
+    std::string asString;
     signal(SIGPIPE, SIG_IGN);
     try
     {
         create_server();
-        char buffer[BUFFER_SIZE];
         while (1)
         {
             is_pass = false;
@@ -342,7 +376,8 @@ void Server::main_loop()
                     }
                     else
                     {
-                        std::cout << "-----------------Reading-----------------" << std::endl;
+                        // std::cout << "-----------------Reading-----------------" << std::endl;
+                        char buffer[BUFFER_SIZE];
                         std::memset(buffer, 0, sizeof(buffer));
                         int bytes_read = recv(pollfds[i].fd, buffer, sizeof(buffer), 0);
                         
@@ -363,22 +398,20 @@ void Server::main_loop()
                         }
                         else
                         {
-                            buffer[bytes_read] = '\0';
                             //authenticate
-                            
+                            // std::cout << "*" << bytes_read << "*" << std::endl;
+                            buffer[bytes_read] = '\0';
                             // I will add the parsing of the commands here : ahmed
                             try
                             {
                                 if(!this->clients[pollfds[i].fd].isconnected)
                                 this->authenticate(buffer, pollfds[i].fd);
-                                else{
-                                    std::string fullMessage(buffer);
-                                    
-                                    ReforMessage::GlobalReform(fullMessage);
-                                    ChanopCommand(fullMessage);
-                                    std::cout << "================================="<< std::endl;
-                                    std::cout << "buffer Readed ::::" << fullMessage << "::::|" << std::endl;
-                                    std::cout << "================| |================="<< std::endl;
+                                else
+                                {
+                                    asString = buffer;
+                                    ReforMessage::GlobalReform(asString);
+                                    ChanopCommand(ReforMessage::FinalMessage);                                   
+                                   //Here Write
                                 }
                             }
                             catch(const std::exception& e)
@@ -509,6 +542,7 @@ void Server::authenticate(std::string buffer,int fd)
 
 int main(int ac, char **av)
 {
+    std::cout << "Is "<< std::endl;
     std::stringstream ss;
     int port;
     if (ac != 3)
