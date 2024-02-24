@@ -1,18 +1,25 @@
 IRC			= 	ircserv
-SRC			=	main.cpp
-INCLUDE		=
+
+SRC			=	main.cpp \
+				./srcs/server/Server.cpp
+
+INCLUDE		=	./headers/Server.hpp
+
 CXX			= 	c++
-OBJ_DIR		=	./objs
+
+OBJ_DIR		=	/Users/$(USER)/Desktop/Internet-Relay-Chat/objs
+
 OBJ			= 	$(OBJ_DIR)/$(SRC:.cpp=.o)
-CFLAGS		= 	-std=c++98 -Wall -Wextra -Werror
+
+CXXFLAGS	= 	-std=c++98 -Wall -Wextra -Werror
 
 all : $(IRC)
 
 $(OBJ_DIR)/%.o : %.cpp $(INCLUDE)
-	$(CXX) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(IRC): $(OBJ)
-	$(CXX) $(CFLAGS) $(OBJ) -o $(IRC)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(IRC)
 
 clean :
 	rm -fr $(OBJ)
