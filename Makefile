@@ -1,31 +1,45 @@
-IRC			= 	ircserv
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
+#    Updated: 2024/02/24 19:59:01 by abait-ta         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRC			=	main.cpp \
-				./srcs/server/Server.cpp
+NAME         =   ircserv
 
-INCLUDE		=	./headers/Server.hpp
+SERVERPATH  =  ./srcs/server
 
-CXX			= 	c++
+CMDPATH     = ./srcs/commands
 
-OBJ_DIR		=	/Users/$(USER)/Desktop/Internet-Relay-Chat/objs
+SRC         =   Global_main.cpp \
+                $(SERVERPATH)/Server.cpp
 
-OBJ			= 	$(OBJ_DIR)/$(SRC:.cpp=.o)
+INCLUDE     =   ./headers/Server.hpp
 
-CXXFLAGS	= 	-std=c++98 -Wall -Wextra -Werror
+CXX         =   c++
 
-all : $(IRC)
+OBJ = ${SRC:.cpp=.o}
 
-$(OBJ_DIR)/%.o : %.cpp $(INCLUDE)
+CXXFLAGS    =   -std=c++98 -Wall -Wextra -Werror
+
+all : $(NAME)
+
+$(NAME): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME) && rm $(OBJ)
+
+%.o : %.cpp $(INCLUDE)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(IRC): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $(IRC)
 
 clean :
 	rm -fr $(OBJ)
 
 fclean : clean
-	rm -fr $(IRC)
+	rm -fr $(NAME)
 
 re : fclean all
 
