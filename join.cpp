@@ -259,139 +259,145 @@ enum KeyType
 // @=2 try TO JOIN A CHANNEL an no Key Given so if channel require password error
     // I don't Have a Password I'll not get in Channel
     //
-void    JoinWithKey(std::string &user, std::string &ChannelName, std::string& Key, enum KeyType KeyFlag){   
-    //Extract the object with sameName of channel;
-    std::vector<ChatRoom>::iterator iter = FindUsingName(ChannelName);
-
-    
-    user = "BOLALAn";
-    (*iter).AddasMediator(user);
-    // (*iter).keyStatus = true;
-    // (*iter)._ChatKey = "Fortan";
-    // (*iter).AddasMediator(user);
-    // (*iter)._ChatKey="GOOD";
-    // (*iter)._BannedUsers.push_back(user);
-    // (*iter)._AllowedUsers = 1;
-    // (*iter).keyStatus = 1;
-    (*iter)._Acces_isInviteOnly = true;
-    (*iter)._InviteList.push_back(user);
-    if ((*iter).IsalreadyMember(user) == false){  // std::cout << " notttt IN CHANNEL " << std::endl;
-        if ((*iter).IsBanned(user) == false){ //check if user is banned or not 
-            if ((*iter)._Mediators.size() + (*iter)._Members.size() < (*iter)._AllowedUsers){    //check if the Limit User is not arrived
-                if ((*iter)._Acces_isInviteOnly == true){         // channel not Full may use memeber.size() + mediator.size();
-                    if ((*iter).IsInviteList(user) == true){ // The channel is invite only and User is invited also
-                            (*iter).Addasmember(user);
-                            std::cout << "User Added "<< std::endl;
-                            std::string response = ":" + user + "!" + MYhost::GetHost() + " JOIN " + ChannelName + "\n";
-                            response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";
-                            response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
-                            std::cout << response << std::endl;
-                            /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                                @: Send attachmaat to him Selllfff join wlist w endof 9wada
-                            */
-
-                            //Send Message to all users in the Channel informing them That the a new user is comming.
-                    }
-                    else{
-                        std::string response = MYhost::GetHost() + " " + "473" + " " + user + " " + ChannelName + " :Channel is Invite only (+i)" ;
-                            std::cout << response << std::endl;
-                            // The channel is invite only and the User is not invited
-                            //  ERR_INVITEONLYCHAN (473) 
-                    }
-                }
-                else{
+void    PassworMatcher(std::vector<ChatRoom>::iterator& iter, std::string &user, std::string &ChannelName, std::string& Key, enum KeyType KeyFlag)
+{
                     if ((*iter).keyStatus == true){
                         if ((*iter)._ChatKey.compare(Key) == 0 && KeyFlag == KEY_PROVIDED){
                             std::cout << "User added bECAUSE TH KEY match"<< std::endl;
                                 (*iter).Addasmember(user);
                                 /*Send to this user in it fd self*/
                                    std::string response = ":" + user + "!" + MYhost::GetHost() + " JOIN " + ChannelName + "\n";
-                            response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";
-                            response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
-                            std::cout << response << std::endl;
+                                    response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";
+                                        response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
+                                             std::cout << response << std::endl;
                                 /**/
                             //Send Message to all users in the Channel informing them That the a new user is comming.
                             // :ornal!~u@qk3i8byd6tfyg.irc JOIN #torssan this Message To all channel member
                     }else{
-                            // Send wrong password
-                            //  ERR_BADCHANNELKEY (475) in his FD
-                            std::string response = MYhost::GetHost() + " " + "475" + " " + user + " " + ChannelName + ": Wrong Channel Password (+k)";
-                            std::cout << response << std::endl;
+                               // Send wrong password
+                        //  ERR_BADCHANNELKEY (475) in his FD
+                std::string response = MYhost::GetHost() + " " + "475" + " " + user + " " + ChannelName + ": Wrong Channel Password (+k)";
+        std::cout << response << std::endl;
                     }
-                } else{
+                }
+                else{
                             (*iter).Addasmember(user);
-                            std::string response = ":" + user + "!" + MYhost::GetHost() + " JOIN " + ChannelName + "\n";
-                            response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";
-                            response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
-                            std::cout << response << std::endl;
-                        std::cout << "Join Because no password required" << std::endl;
-                            //Send Message to all users in the Channel informing them That the a new user is comming.
+                                std::string response = ":" + user + "!" + MYhost::GetHost() + " JOIN " + ChannelName + "\n";
+                                    response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";
+                                        response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
+                                            std::cout << response << std::endl;
+                                                // std::cout << "Join Because no password required" << std::endl;
+                                                    //Send Message to all users in the Channel informing them That the a new user is comming.
                     }
-                //channel is not invite only so we will acces it with the key
+                                                        //channel is not invite only so we will acces it with the key
+}
+
+void    JoinWithKey(std::string &user, std::string &ChannelName, std::string& Key, enum KeyType KeyFlag){   
+    //Extract the object with sameName of channel;
+    // user = "Kortan";
+    std::vector<ChatRoom>::iterator iter = FindUsingName(ChannelName);
+    if ((*iter).IsalreadyMember(user) == false){  // std::cout << " notttt IN CHANNEL " << std::endl;
+        if ((*iter).IsBanned(user) == false){ //check if user is banned or not 
+            if ((*iter)._Mediators.size() + (*iter)._Members.size() < (*iter)._AllowedUsers){    //check if the Limit User is not arrived
+                if ((*iter)._Acces_isInviteOnly == true){         // channel not Full may use memeber.size() + mediator.size();
+                    if ((*iter).IsInviteList(user) == true){ // The channel is invite only and User is invited also
+                            (*iter).Addasmember(user);
+                        std::cout << "User Added "<< std::endl;
+                    std::string response = ":" + user + "!" + MYhost::GetHost() + " JOIN " + ChannelName + "\n"; /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+                response += ":" + MYhost::GetHost() + " 353 " + user + " = " + ChannelName + " " + (*iter).MembersList() + "\n";/*@: Send attachmaat to him Selllfff join wlist w endof 9wada*/
+            response += ":" + MYhost::GetHost() + " 366 " + user + " " + ChannelName + " :End of NAMES list";
+        std::cout << response << std::endl;
+                            //Send Message to all users in the Channel informing them That the a new user is comming.
+        }
+            else{
+                std::string response = MYhost::GetHost() + " " + "473" + " " + user + " " + ChannelName + " :Channel is Invite only (+i)" ; //  ERR_INVITEONLYCHAN (473)
+                        std::cout << response << std::endl; // The channel is invite only and the User is not invited              
+                    }
+                }
+                else{
+                        PassworMatcher(iter, user, ChannelName, Key, KeyFlag);
             }  
             }else{
-                // Send Error 
-                // channel is Full÷    "<client> <channel> :Cannot join channel (+l)"
-                // 471
-                std::string response = MYhost::GetHost() + " " + "471" + " " + user + " " + ChannelName + " :This channel exceeds limits";
-                std::cout << response << std::endl;
+                                                        // Send Error 
+                                            // channel is Full÷    "<client> <channel> :Cannot join channel (+l)" 471
+                                     std::string response = MYhost::GetHost() + " " + "471" + " " + user + " " + ChannelName + " :This channel exceeds limits";
+                                std::cout << response << std::endl;
             }
         }
         else{ //Banned ;
-            std::string response = MYhost::GetHost() + " " + "474" + " " + user + " " + ChannelName + " :You are an active ban on this channel";
-            std::cout << response << std::endl;
+                        std::string response = MYhost::GetHost() + " " + "474" + " " + user + " " + ChannelName + " :You are an active ban on this channel";
+                std::cout << response << std::endl;
         }
     }
     else{
         //Use Send Here the User already Exist
-        std::string response = MYhost::GetHost() + " " + "443" + " " + user + " " + ChannelName + " :You are already on channel";
-        std::cout << response << std::endl;
+    std::string response = MYhost::GetHost() + " " + "443" + " " + user + " " + ChannelName + " :You are already on channel";
+std::cout << response << std::endl;
     }
 }
-// for the host it will be in the the Server Claas
-// The I'll make a static Function That Return it bu taking this host by params 
-// static GetHost(get_host())
-// {
-    // return (Thestring);
-// }
+
+void     ExtractChannels(std::string& ClientMsg, std::vector<std::string>& Channels){
+        std::stringstream channelstream(ClientMsg);
+        std::string channelHolder;
+
+        channelstream >> channelHolder;//Ignore the join command;
+        channelHolder.clear();
+        channelstream >> channelHolder;//GetchannelsList
+
+        std::stringstream stream(channelHolder); /*<Give My channelList to a stream to Display it>*/
+        std::string SingleChannel;
+
+        while (std::getline(stream, SingleChannel, ',')){ //Make Vector of channels;
+            Channels.push_back(SingleChannel);
+        }
+}
+
+    
+void    ExtractKeys(std::string& ClientMsg, std::vector<std::string>& keys)
+{
+        std::stringstream keystream(ClientMsg);
+        std::string keyHolder;
+
+        keystream >> keyHolder >> keyHolder ; //ignore join and channelList
+        keyHolder.clear();
+        keystream >>  keyHolder ; //GetKeyList;
+        
+        std::stringstream stream(keyHolder);
+        std::string SingleKey; /*<catch every single key with this >*/
+
+          while (std::getline(stream, SingleKey, ',')){ //Make Vector of keys;
+            keys.push_back(SingleKey);
+        }
+}
+
 int main (int ac, char **av)
 {
     if (ac == 2){
         ClientGlobal::ServerClients.insert(std::pair<int , CLIENTD>(8, CLIENTD("canis.lupus", "Abdelali", "127.0.0.1")));
-        // std::cout << ClientGlobal::ServerClients.at(8).nickname << std::endl;
-        // std::cout << ClientGlobal::ServerClients.at(8).ipAddress << std::endl;
-        // std::cout << ClientGlobal::ServerClients.at(8).username << std::endl;
+/*************************************************************************************************************************/
+        std::map<int, CLIENTD>::iterator iter =  ClientGlobal::ServerClients.begin();
 
-        std::stringstream stream(av[1]);
-
-        std::string Listofchannels;
-        
-        std::string ListofKeys;
-
-        std::string catcher;
-
-        stream >> catcher; // ignore join cmd 'JOIN'
-
-        stream >> Listofchannels;//listofchannelsname
-
-        std::stringstream channelstream(Listofchannels);
-        
-        stream >> ListofKeys;//channelskeys
-        std::stringstream keystream(ListofKeys);
-
-        std::string channelHolder;
-        
-        std::string keyHolder;
+        std::cout << (iter)->first << " " << iter->second.nickname << iter->second.ipAddress << std::endl;
+        // exit(1);
         std::vector<std::string> Channels;
         std::vector<std::string> keys;
 
-        while (std::getline(channelstream, channelHolder, ',')){ //Make Vector of channels;
-            Channels.push_back(channelHolder);
-        }
-         while (std::getline(keystream, keyHolder, ',')){ //Make Vector of keys;
-            keys.push_back(keyHolder);
-        }
-    /********/
+        std::string clientmsg(av[1]);
+
+        ExtractChannels(clientmsg, Channels);   //makeVector of channels
+        
+        ExtractKeys(clientmsg, keys);       //MakeVector of Keys
+        // std::vector<std::string>::iterator iter = Channels.begin();
+        // while (iter != Channels.end()){
+        //     std::cout << *iter << std::endl;
+        //     iter++;
+        // }
+        // iter = keys.begin();
+        //    while (iter != keys.end()){
+        //     std::cout << *iter << std::endl;
+        //     iter++;
+        // }
+/***********************************************************************/
     const char *STAT[]= {"TOBE_JOINED", "TOBE_BUILDED",NULL};
     /**************/
     /*OH MY COOOODE clean code as  Fuck hhhh */
@@ -403,11 +409,16 @@ int main (int ac, char **av)
         try{
             if (FollowGrammar(Channels.at(i))){
                 if(FindInGlobalChannel(Channels.at(i)) == TOBE_BUILDED ){
-                    std::cout << "TOBEBUILDED" << std::endl;
+                    // std::cout << "TOBEBUILDED" << std::endl;
                     ChatRoom BuildRoom(ClientGlobal::ServerClients.at(8).nickname, Channels.at(i));
+                        std::string response = ":" + ClientGlobal::ServerClients.at(8).nickname + "!" + MYhost::GetHost() + " JOIN " + BuildRoom._RoomName + "\n"; /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+                response += ":" + MYhost::GetHost() + " 353 " + ClientGlobal::ServerClients.at(8).nickname + " = " + BuildRoom._RoomName + " " + BuildRoom.MembersList() + "\n";/*@: Send attachmaat to him Selllfff join wlist w endof 9wada*/
+            response += ":" + MYhost::GetHost() + " 366 " + ClientGlobal::ServerClients.at(8).nickname + " " + BuildRoom._RoomName + " :End of NAMES list";
+        std::cout << response << std::endl;
                     serverglobal.push_back(BuildRoom);
                 }
-                else{ // TO_BEJOINED With a key given !
+                else
+                { // TO_BEJOINED With a key given !
                     if (i < keys.size()){
                         std::cout << " TO JOIN With Key : " << keys.at(i)<< std::endl;
                         try{
@@ -419,15 +430,18 @@ int main (int ac, char **av)
                         }
                 }
                 else
-                try{
-                    std::cout << "No Key Provided : Key : " <<  i << " "<< keys.size() << std::endl;
-                    std::string EmptyPass("");
-                    JoinWithKey(ClientGlobal::ServerClients.at(8).nickname, Channels.at(i), EmptyPass , NO_KEY_PROVIDED);
+                {
+                    try{
+                            std::cout << "No Key Provided : Key : " <<  i << " "<< keys.size() << std::endl;
+                                std::string EmptyPass("");
+                                    JoinWithKey(ClientGlobal::ServerClients.at(8).nickname, Channels.at(i), EmptyPass , NO_KEY_PROVIDED);
                     //just try to be a member of this channel;
                     // if channel have code just back you don't have the Code 
                 }
                 catch(std::exception& e){
-
+                                std::cout << "Exception Throwed and Catched Due to Reason : ";
+                                    std::cout << e.what() << std::endl;
+                }
                 }
                 }
             }

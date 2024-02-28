@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/26 22:31:20 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/02/28 04:36:47 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void    JoinMessage(std::string& clientMsg, int __fd){
         send (__fd, response.c_str(), response.length(), 0);
         return ;
     }
-    else if (OcuurSpace == 1){
+    else {
         stream >> params;
         
         while (std::getline(stream, params, ','))
