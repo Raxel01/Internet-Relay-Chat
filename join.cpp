@@ -391,7 +391,6 @@ int main (int ac, char **av)
         std::vector<std::string> keys;
 
         std::string clientmsg(av[1]);
-
         ExtractChannels(clientmsg, Channels);   //makeVector of channels
         
         ExtractKeys(clientmsg, keys);       //MakeVector of Keys
@@ -405,30 +404,32 @@ int main (int ac, char **av)
         try{
             if (FollowGrammar(Channels.at(i))){
                 if(FindInGlobalChannel(Channels.at(i)) == TOBE_BUILDED ){
-                           ChatRoom BuildRoom(ClientGlobal::ServerClients.at(8).nickname, Channels.at(i));
-                        std::string response = ":" + ClientGlobal::ServerClients.at(8).nickname + "!" + MYhost::GetHost() + " JOIN " + BuildRoom._RoomName + "\n"; /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-                response += ":" + MYhost::GetHost() + " 353 " + ClientGlobal::ServerClients.at(8).nickname + " = " + BuildRoom._RoomName + " " + BuildRoom.MembersList() + "\n";/*@: Send attachmaat to him Selllfff join wlist w endof 9wada*/
-            response += ":" + MYhost::GetHost() + " 366 " + ClientGlobal::ServerClients.at(8).nickname + " " + BuildRoom._RoomName + " :End of NAMES list";
-        // send(__fd, response.c_str(), response.length(), 0);
-    serverglobal.push_back(BuildRoom);//Will be changed By My GlobalSerer data attribut 
+                    ChatRoom BuildRoom(ClientGlobal::ServerClients.at(8).nickname, Channels.at(i));
+                        std::string response = ":" + ClientGlobal::ServerClients.at(8).nickname + "!" + MYhost::GetHost() + " JOIN " + BuildRoom._RoomName + "\n";
+                    response += ":" + MYhost::GetHost() + " 353 " + ClientGlobal::ServerClients.at(8).nickname + " = " + BuildRoom._RoomName + " " + BuildRoom.MembersList() + "\n";
+                response += ":" + MYhost::GetHost() + " 366 " + ClientGlobal::ServerClients.at(8).nickname + " " + BuildRoom._RoomName + " :End of NAMES list";
+            // send(__fd, response.c_str(), response.length(), 0);
+        serverglobal.push_back(BuildRoom);//Will be changed By My GlobalSerer data attribut 
     }
     else{ // TO_BEJOINED With a key given ! Keystatus == 1(INSERT THE CODE GIVED, TRUE || False
-            if (i < keys.size()){
+            if (i < keys.size())
+            {
                 try{
                         JoinWithKey(__fd, ClientGlobal::ServerClients.at(8).nickname, Channels.at(i), keys.at(i), KEY_PROVIDED);
-                        }
-                        catch (std::exception& e){
+                }
+                catch (std::exception& e){
                                 std::cout << "Exception Throwed and Catched Due to Reason : ";
                                     std::cout << e.what() << std::endl;
-                        }
-                }else {//a
+                }
+            }
+            else {//a
                     try{ // Keystatus == true just back you don't have the key 
-                            std::cout << "No Key Provided : Key : " <<  i << " "<< keys.size() << std::endl;
-                                std::string EmptyPass("");
-                                    JoinWithKey(__fd ,ClientGlobal::ServerClients.at(0).nickname, Channels.at(i), EmptyPass , NO_KEY_PROVIDED);
-                }catch(std::exception& e){
-                                std::cout << "Exception Throwed and Catched Due to Reason : ";
-                                    std::cout << e.what() << std::endl;
+                            std::string EmptyPass("");
+                                JoinWithKey(__fd ,ClientGlobal::ServerClients.at(0).nickname, Channels.at(i), EmptyPass , NO_KEY_PROVIDED);
+                }
+                catch(std::exception& e){
+                            std::cout << "Exception Throwed and Catched Due to Reason : ";
+                                std::cout << e.what() << std::endl;
                 }
                                         }//!aa
     }
