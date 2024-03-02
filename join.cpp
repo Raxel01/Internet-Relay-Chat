@@ -208,11 +208,6 @@ bool FollowGrammar(std::string &channel)
 /***********************************/
 std::vector<ChatRoom> serverglobal; //will bE static in my true implementation 
 
-enum    ChannelStatus{
-    TOBE_JOINED = 0,
-    TOBE_BUILDED,
-};
-
 typedef std::vector<ChatRoom>::iterator VectITER;
 
 std::string ToUpper(std::string channel)
@@ -220,6 +215,10 @@ std::string ToUpper(std::string channel)
     std::transform(channel.begin(), channel.end(), channel.begin(), ::toupper);
     return (channel);
 }
+enum    ChannelStatus{
+    TOBE_JOINED = 0,
+    TOBE_BUILDED,
+};
 
 enum ChannelStatus     FindInGlobalChannel(const std::string& SearchFor)
 {
@@ -384,16 +383,17 @@ void    ExtractKeys(std::string& ClientMsg, std::vector<std::string>& keys)
 int main (int ac, char **av)
 {
     if (ac == 2){
-        ClientGlobal::ServerClients.insert(std::pair<int , CLIENTD>(8, CLIENTD("canis.lupus", "Abdelali", "127.0.0.1")));
-        ClientGlobal::ServerClients.insert(std::pair<int , CLIENTD>(0, CLIENTD("Boltan", "Abdelalo", "123.0.0.10")));
+ 
+        std::string clientmsg(av[1]);
+        
 
         std::vector<std::string> Channels;
         std::vector<std::string> keys;
-
-        std::string clientmsg(av[1]);
         ExtractChannels(clientmsg, Channels);   //makeVector of channels
-        
         ExtractKeys(clientmsg, keys);       //MakeVector of Keys
+
+
+
 /***********************************************************************/
     const char *STAT[]= {"TOBE_JOINED", "TOBE_BUILDED",NULL};
 /***********************************************************************/

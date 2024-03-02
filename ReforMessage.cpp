@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:16:29 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/25 12:17:46 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/02 07:03:18 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,14 @@ void    ReforMessage::CleanMessage(){
 }
 
 void    ReforMessage::TriMessage(){
-    start = FinalMessage.find_first_not_of(" ");
-    end = FinalMessage.find_last_not_of(" ");
-  
+    
+    start = FinalMessage.find_first_not_of(' ');
+    end = FinalMessage.find_last_not_of(' ');
+    
     if (start != std::string::npos && end != std::string::npos){
-        FinalMessage = FinalMessage.substr(start, end - start +1);
+        FinalMessage = FinalMessage.substr(start, end - start + 1);
     }
+
 }
 
 void    ReforMessage::Reinitializer()
@@ -79,7 +81,7 @@ void    ReforMessage::removeCRLF(){
 void    ReforMessage::GlobalReform(std::string Message){
         Reinitializer();
         FinalMessage = Message;
+        removeCRLF();
         TriMessage();
         CleanMessage();
-        removeCRLF();
 }

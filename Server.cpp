@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/27 17:45:55 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/02 07:00:22 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,7 +239,7 @@ void Server::main_loop()
                         {
                             //authenticate
                             // std::cout << "*" << bytes_read << "*" << std::endl;
-                            buffer[bytes_read] = '\0';
+                            // buffer[bytes_read] = '\0';
                             // I will add the parsing of the commands here : ahmed
                             try
                             {
@@ -247,9 +247,6 @@ void Server::main_loop()
                                 this->authenticate(buffer, pollfds[i].fd);
                                 else
                                 {
-                                    // std::cout << pollfds[i].fd << std::endl;
-                                    // std::cout << "BUFFER_SIZE : " << sizeof(buffer)<< std::endl;
-                                    // send(pollfds[i].fd, buffer, sizeof(buffer), 0);
                                     asString = buffer;
                                     ReforMessage::GlobalReform(asString);
                                     MediatorCommand(ReforMessage::FinalMessage, pollfds[i].fd);  //                   

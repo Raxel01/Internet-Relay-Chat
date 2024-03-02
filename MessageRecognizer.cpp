@@ -6,22 +6,16 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/28 04:36:47 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/02 03:38:55 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ReforMessage.hpp"
-
-#define    KICK       "KICK"
-#define    INVITE     "INVITE"
-#define    MODE       "MODE"
-#define    TOPIC      "TOPIC"
-#define    JOIN       "JOIN"
-#define    PART       "PART"
-#define    PONG      "PONG"
-#define    UNKNOW     "UNKNOW"
-#define    IGNORE     "IGNORE"
-#define    CONTINUE   "CONTINUE"
+# include   "ReforMessage.hpp"
+# include   "JoinRequest.hpp"
+# include   "ChatRoom.hpp"
+# include   "GlobalException.hpp"
+# include  "KickRequest.hpp"
+# include   "PartRequest.hpp"
 
 std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NICKNAME, std::string CMD, std::string RAISON)
 {
@@ -30,34 +24,8 @@ std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::st
     return (Reply);
 }
 
-void    JoinMessage(std::string& clientMsg, int __fd){
-    
-    std::stringstream stream(clientMsg);
-    std::string params;
-    
-    size_t OcuurSpace = std::count(clientMsg.begin(), clientMsg.end(), ' ');
-    if(OcuurSpace == 0){
-        std::string response = (NumericReplies("localhost", "461", "NICKNAME", "JOIN", ":No enough parameters.")) + \
-        NumericReplies("localhost", "999", "NICKNAME", "JOIN", ":<channel>[,<channel>]+ [<key>[,<key>]+]");
-        send (__fd, response.c_str(), response.length(), 0);
-        return ;
-    }
-    else {
-        stream >> params;
-        
-        while (std::getline(stream, params, ','))
-        {
-            // std::cout << params << std::endl;
-            return ;
-        }
-        stream >> params;
-        
-        return ;
-    }
-    
-    
-    
-}
+
+
 std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
     if (cmd.compare(JOIN) == 0){
         JoinMessage(clientMsg, __fd);
@@ -65,7 +33,7 @@ std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
     }
     else if (cmd.compare(PART) == 0)
     {
-        // PartMessage(clientMsg);
+        PartMessage(clientMsg, __fd);
         return (PART);
     }
     else if (cmd.compare(PONG) != 0){
@@ -78,9 +46,9 @@ std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
 
 std::string RecognizeCmd(std::string& cmd, std::string& clientMsg, int __fd)
 {
-         if (cmd.compare(KICK)   == 0)
+         if (cmd.compare(KICK) == 0)
          {
-            // KickMessage(clientMsg);
+            KickMessage(clientMsg, __fd);
                 return KICK;
     }
     else if (cmd.compare(INVITE) == 0){
