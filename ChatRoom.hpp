@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/01 23:29:24 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 03:49:29 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ class ChatRoom
         bool                 keyStatus          ; //+k if the key is setted or not 
         bool                 HaveLimitUser      ; //+l
         bool                 TopicRestriction   ;   //+t [+t] seTtoknow Who will seet the Topic
+        bool                 TopicStatus        ;
     public :
         ChatRoom();
         ChatRoom(std::string& Creator,std::string& SetRoomName);
@@ -43,9 +44,10 @@ class ChatRoom
         void            Addasmember(std::string& newMember);
         void            AddasMediator(std::string& NewMediator);
         void            BanThisUser(std::string User);
-        
-        void            removeMember(std::string& tobeRemoved);
-        void            removeMediator(std::string& toBeremoved);
+        std::string     getTOPIC();
+        void            SetTOPIC(std::string TOPIC);
+        // void            removeMember(std::string& tobeRemoved);
+        void            PartMediator(std::string& toPart);
 
         bool            IsalreadyMember(std::string& MayUser);
         bool            IsMediator(std::string& MayMediator);
@@ -54,9 +56,11 @@ class ChatRoom
         bool            IsInviteList(std::string& TargetUser);
         std::string     MembersList();
         void            getelems();
-        const std::string&    GetRoomname();    
+        const std::string&    GetRoomname();
+        size_t          Roomsize();
         ~ChatRoom(); 
 };
+
 
 class GlobalServerData{
     public :

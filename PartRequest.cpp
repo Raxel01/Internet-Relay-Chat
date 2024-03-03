@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 08:36:25 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 04:55:30 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 #include "GlobalException.hpp"
 #include "ChatRoom.hpp"
 
-void    FullChannelList(std::string& channelList, std::deque<std::string>& channelVector)
+
+void    FullChannelList(std::string& channelList, DEQUE& channelVector)
 {
     std::stringstream stream(channelList);
     std::string Holder;
@@ -27,11 +28,11 @@ void    FullChannelList(std::string& channelList, std::deque<std::string>& chann
 }
 
 //STOP IN 02/03/ :8 : 36
-void    PartProcessor(std::deque<std::string>& Channels, int __fd, std::string& Reason)
+void    PartProcessor(DEQUE& Channels, int __fd, std::string& Reason)
 {
     size_t i = -1;
     std::string owner("abdelali");
-    std::vector<ChatRoom>::iterator Finder;
+    Roomiter Finder;
     std::string response;
     
     while (++i < Channels.size())
@@ -43,18 +44,19 @@ void    PartProcessor(std::deque<std::string>& Channels, int __fd, std::string& 
         {
             if ((*Finder).IsalreadyMember(owner) == true)//Server::ServerClient.at(__fd).nickname;
             {
-                if ((*Finder).IsMediator(owner) == true)
-                {
+                if ((*Finder).IsMediator(owner) == true){
+                    
+                    (*Finder).PartMediator(owner); //  owner to Change
+                    /*Broadcast*/
                     std::cout << " Mediator "<< std::endl;
                 }
-                else if ((*Finder).IsRegularUser(owner) != (*Finder)._Members.end())
-                {
+                else if ((*Finder).IsRegularUser(owner) != (*Finder)._Members.end()){//User is a member
                     //obj._Members.erase((obj).ISregularUser(owner)) nickname of The User
                         BroadcastMessage("", "" , Finder, response);
                         (*Finder)._Members.erase((*Finder).IsRegularUser(owner));
                         std::cout << "Not Mediator"<< std::endl;
                 }
-                
+                /* I think I'll Broadcast Here */
             }
             else{
                 response = NumericReplies(MYhost::GetHost(), "442", "NICKNAME", Channels.at(i), "You are not on this channel");
@@ -83,8 +85,8 @@ void    PartMessage(std::string& clientMsg, int __fd)
     
     if (OccurSpace == 0 || clientMsg.compare("PART :") == 0){
         std::string response = ":" + MYhost::GetHost() + " 461 " + " NICKNAME " + " PART " + ": NO ENOUGH PARAMETERS" + "\n" +
-        NumericReplies(MYhost::GetHost(), "999", "NICKNAME", "PART", ":<channel,channel1,...> [<reason>]");
-        send(__fd, response.c_str(), response.length(), 0);
+            NumericReplies(MYhost::GetHost(), "999", "NICKNAME", "PART", ":<channel,channel1,...> [<reason>]");
+            send(__fd, response.c_str(), response.length(), 0);
     }
     else
     {

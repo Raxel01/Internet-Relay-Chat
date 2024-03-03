@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 03:38:55 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 04:36:34 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 # include   "JoinRequest.hpp"
 # include   "ChatRoom.hpp"
 # include   "GlobalException.hpp"
-# include  "KickRequest.hpp"
+# include   "KickRequest.hpp"
 # include   "PartRequest.hpp"
+#include    "TOPICrequest.hpp"
 
 std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NICKNAME, std::string CMD, std::string RAISON)
 {
@@ -23,8 +24,6 @@ std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::st
     Reply = ":" + Prefix + " " + CODEREPLY + " " + NICKNAME + " " + CMD +" :" + RAISON + "\n";
     return (Reply);
 }
-
-
 
 std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
     if (cmd.compare(JOIN) == 0){
@@ -56,7 +55,7 @@ std::string RecognizeCmd(std::string& cmd, std::string& clientMsg, int __fd)
                 return INVITE;
     }
     else if (cmd.compare(TOPIC)  == 0){
-        // TopicMessage(clientMsg);
+        TOPICmessage(clientMsg, __fd);
                 return TOPIC;
     }
     else if (cmd.compare(MODE)   == 0){

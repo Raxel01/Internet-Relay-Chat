@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 07:00:22 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 06:06:28 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,7 @@ void Server::main_loop()
                                 {
                                     asString = buffer;
                                     ReforMessage::GlobalReform(asString);
+                                    std::cout << ReforMessage::FinalMessage << std::endl;
                                     MediatorCommand(ReforMessage::FinalMessage, pollfds[i].fd);  //                   
                                 }
                             }

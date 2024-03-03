@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:41 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 04:32:59 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 05:21:26 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void    KickProcessor(std::string& channelName, std::string& userList, int __fd,
                     throw EX_NOTONCHANNEL();
             }
             catch(EX_NOTONCHANNEL& e){
-                std::string response (NumericReplies(MYhost::GetHost(), "442", "NICKNAME", channelName, "Bad Request Your are Not a part of " + channelName));
+                std::string response (NumericReplies(MYhost::GetHost(), "442", "NICKNAME", channelName, "Bad Request Your are Not a part of this channel"));
                     send(__fd, response.c_str(), response.length(), 0);
                          e.what();
             }

@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 03:57:12 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 04:27:19 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ ChatRoom::ChatRoom(std::string& Creator, std::string& SetRoomName): _RoomName(Se
     _AllowedUsers = 150;
     keyStatus = false;
     _Acces_isInviteOnly = false;
+    TopicRestriction = true; // Only Admin can set the  Channel Topic
 }
 
 void            ChatRoom::getelems(){
@@ -133,6 +134,34 @@ DEQUE::iterator            ChatRoom::IsRegularUser(std::string User){
         iter++;
     }
     return _Members.end();
+}
+
+size_t          ChatRoom::Roomsize(){
+    return (_Members.size() + _Mediators.size());
+}
+
+
+void    ChatRoom::PartMediator(std::string& toPart)
+{
+    DEQUE::iterator iter = _Mediators.begin();
+    
+    std::string Admin = "@" + toPart;
+    while (iter < _Mediators.end()){
+        if (Admin == *iter)
+            break ;
+        iter++;
+    }
+    _Mediators.erase(iter);// STOP HERE ... / **-** /
+}
+
+std::string    ChatRoom::getTOPIC(){
+    return this->_ChatTopic;
+}
+
+void            ChatRoom::SetTOPIC(std::string TOPIC)
+{
+    _ChatTopic.clear();
+    _ChatTopic = TOPIC;
 }
 
 void    ChatRoom::BanThisUser(std::string User)
