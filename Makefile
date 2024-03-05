@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/02/24 19:59:01 by abait-ta         ###   ########.fr        #
+#    Updated: 2024/03/05 05:00:01 by mbachar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,15 +17,17 @@ SERVERPATH  =  ./srcs/server
 CMDPATH     = ./srcs/commands
 
 SRC         =   main.cpp \
-                $(SERVERPATH)/Server.cpp
+                $(SERVERPATH)/Server.cpp \
+                $(SERVERPATH)/Client.cpp \
+                $(SERVERPATH)/utils.cpp
 
-INCLUDE     =   ./headers/Server.hpp
+INCLUDE     =   ./headers/Server.hpp ./headers/Client.hpp
 
 CXX         =   c++
 
 OBJ = ${SRC:.cpp=.o}
 
-CXXFLAGS    =   -std=c++98 -Wall -Wextra -Werror
+CXXFLAGS    =   -std=c++98 -Wall -Wextra -Werror -g -fsanitize=address
 
 all : $(NAME)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/24 19:37:47 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/05 06:18:33 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,15 @@
 # include	<sys/types.h>
 # include	<sys/socket.h>
 # include	<cstdlib>
+# include	<netinet/in.h>
+# include	<unistd.h>
+# include	<fcntl.h>
+# include	<poll.h>
+# include	<arpa/inet.h>
+# include	<vector>
+# include	<map>
+# include	<sstream>
+# include	"Client.hpp"
 
 # define	RESET	"\x1b[0m"
 # define	GREEN	"\x1b[1;32m"
@@ -23,17 +32,23 @@
 # define	ORANGE	"\x1b[1;38;5;208m"
 # define	PURPLE	"\x1b[1;38;5;93m"
 
+class	Client;
 class Server
 {
-	private:
-		std::string	port;
-		std::string	pass;
 	public:
+		// Attributes
+		std::string	_port;
+		std::string	_password;
+		static std::map<int, Client> clientDB;
+		// Methods
+		Server(std::string port, std::string password);
 		int			parseInput();
-		void		portSetter(std::string port);
-		std::string	portGetter();
-		void		passSetter(std::string pass);
-		std::string	passGetter();
+		int			start();
+		void		addClient(int clientSocket);
+		void		processClientData(char *buffer, std::map<int, Client>::iterator &it);
+		std::map<int, Client>::iterator	findSocket(int clientSocket);
+		void		mySend(const char *msg, int clientSocket);
 };
 
 void		error(std::string errorMessage);
+std::string	extractKey(char	*buffer);
