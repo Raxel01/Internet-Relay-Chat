@@ -14,10 +14,10 @@ class Client
 		int			clientSocket;
 		std::string	ipAdress;
 		std::string	password;
-		std::string	userName;
-		std::string	nickName;
-		bool		isUserName;
-		bool		isNickName;
+		std::string	username;
+		std::string	nickname;
+		bool		isusername;
+		bool		isnickname;
 		bool		isRegistred;
 		Client();
 };

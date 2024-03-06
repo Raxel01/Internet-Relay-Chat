@@ -6,7 +6,7 @@
 /*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/05 06:18:33 by mbachar          ###   ########.fr       */
+/*   Updated: 2024/03/06 11:10:12 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ class Server
 		// Attributes
 		std::string	_port;
 		std::string	_password;
-		static std::map<int, Client> clientDB;
+		static std::map<int, Client> ServerClients;
 		// Methods
 		Server(std::string port, std::string password);
 		int			parseInput();

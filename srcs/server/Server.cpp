@@ -1,6 +1,6 @@
 #include "../../headers/Server.hpp"
 
-std::map<int, Client> Server::clientDB;
+std::map<int, Client> Server::ServerClients;
 
 Server::Server(std::string port, std::string password)
 {
@@ -89,7 +89,7 @@ int	Server::start()
 							}
 							close(sockets[i].fd);
 							sockets.erase(it_);
-							Server::clientDB.erase(it->first);
+							Server::ServerClients.erase(it->first);
 							break;
 						}
 						else {
@@ -113,37 +113,20 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 	std::string	password;
 	std::string	nickname;
 	std::string	username;
-	static int	password_attempts;
 
 	if (!std::strncmp(buffer, "PASS", 4)) {
-		if (password_attempts == 1) {
-			mySend(" * Warning   : You still have 2 more attempts before you get kicked out from the server.\n", it->first);
-			return ;
-		}
-		else if (password_attempts == 2) {
-			mySend(" * Warning   : You still have 1 more attempt before you get kicked out from the server.\n", it->first);
-			return ;
-		}
-		else if (password_attempts == 3) {
-			mySend(" * Warning   : You have been kicked from the server.\n", it->first);
-			std::cout << RED << " * Client " << PURPLE << it->first << RESET << " has been kicked from the server." << std::endl;
-			close(it->first);
-			return ;
-		}
 		if (it->second.isRegistred) {
 			mySend(" * Error 462 : You are already registred.\n", it->first);
 			return ;
 		}
 		if (std::strlen(buffer) == 4 || std::strlen(buffer) == 5) {
 			mySend(" * Error 461 : Missing password, correct syntax is (PASS server_password).\n", it->first);
-			password_attempts++;
 			return ;
 		}
 		password = extractKey(buffer);
 		if (password != _password) {
 			mySend(" * Error 464 : Incorrect password.\n", it->first);
-			password_attempts++;
-			return ;
+			close(it->first);
 		}
 		if (password == _password) {
 			mySend(" * Success   : You have entered the correct password.\n", it->first);
@@ -156,7 +139,7 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
 			return ;
 		}
-		if (it->second.isNickName) {
+		if (it->second.isnickname) {
 			mySend(" * Error 462 : You already have a nickname.\n", it->first);
 			return ;
 		}
@@ -165,37 +148,37 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 			return ;
 		}
 		nickname = extractKey(buffer);
-		if (nickname[0] == '&' || nickname[0] == '#') {
-			mySend(" * Error 432 : Nickname musn't contain '#' or '&' as trailing characters.\n", it->first);
+		if (nickname[0] == '&' || nickname[0] == '#' || nickname[0] == ':') {
+			mySend(" * Error 432 : nickname musn't contain '#' or '&' or ':' as trailing characters.\n", it->first);
 			return ;
 		}
 		for (size_t i = 0; i < nickname.size(); i++) {
 			if (nickname[i] == ' ' || nickname[i] == '\t') {
-				mySend(" * Error 432 : Nickname musn't contain whitespaces.\n", it->first);
+				mySend(" * Error 432 : nickname musn't contain whitespaces.\n", it->first);
 				return ;
 			}
 		}
-		for (std::map<int, Client>::iterator it_ = Server::clientDB.begin(); it_ != Server::clientDB.end(); it_++) {
-			if (nickname == it_->second.nickName) {
-				mySend(" * Error 433 : Someone in Benito's server is already using that nickname.\n", it->first);
+		for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
+			if (nickname == it_->second.nickname) {
+				mySend(" * Error 433 : Someone in the server is already using that nickname.\n", it->first);
 				return ;
 			}
 		}
-		it->second.nickName = nickname;
-		it->second.isNickName = true;
+		it->second.nickname = nickname;
+		it->second.isnickname = true;
 		mySend(" * Success   : You have set yourself a nickname.\n", it->first);
 		mySend(" * Hint      : Now you can set yourself a username by using (USER <username> 0 * <realname>).\n", it->first);
 	}
-	else if (!std::strncmp(buffer, "USER", 4)) {
+	else if (!std::strncmp(buffer, "USER", 4)) { // Some missing parsing here
 		if (!it->second.isRegistred) {
 			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
 			return ;
 		}
-		if (!it->second.isNickName) {
+		if (!it->second.isnickname) {
 			mySend(" * Error 912 : You need to set yourself a nickname first using (NICK your_nickname).\n", it->first);
 			return ;
 		}
-		if (it->second.isUserName) {
+		if (it->second.isusername) {
 			mySend(" * Error 462 : You already have a username.\n", it->first);
 			return ;
 		}
@@ -214,24 +197,28 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 				username.resize(j + 1);
 				username[j++] = buffer[i++];
 			}
-			for (std::map<int, Client>::iterator it_ = Server::clientDB.begin(); it_ != Server::clientDB.end(); it_++) {
-				if (username == it_->second.userName) {
-					mySend(" * Error 433 : Someone in Benito's server is already using that username.\n", it->first);
+			for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
+				if (username == it_->second.username) {
+					mySend(" * Error 433 : Someone in the server is already using that username.\n", it->first);
 					return ;
 				}
 			}
 			username.resize(j - 1);
-			it->second.userName = username;
-			it->second.isUserName = true;
+			it->second.username = username;
+			it->second.isusername = true;
 			mySend(" * Success   : You have set yourself a username.\n", it->first);
 			mySend(" * Hint      : For more commands, use (HELP).\n", it->first);
 		}
 		else {
-			mySend(" * Error 461 : Missing arguments, syntax should be as follow (USER <username> 0 * <realname>).\n", it->first);
+			mySend(" * Error 913 : Missing arguments, syntax should be as follow (USER <username> 0 * <realname>).\n", it->first);
 			return ;
 		}
 	}
-	else if (!std::strcmp(buffer, "HELP") && it->second.isRegistred && it->second.isNickName && it->second.isUserName) {
+	else if (!std::strcmp(buffer, "HELP\n")) {
+		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
+			mySend(" * Error 913 : You need to be authenticated before using this command.\n", it->first);
+			return ;
+		}
 		mySend(" * KICK    - Ejects a client from the channel.\n", it->first);
 		mySend(" * INVITE  - Invites a client to a channel.\n", it->first);
 		mySend(" * TOPIC   - Changes or view the channel topic.\n", it->first);
@@ -245,10 +232,27 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 		mySend("\t5. +/- o: Gives/takes channel operator privilege.\n", it->first);
 		mySend("\t6. +/- l: Sets/removes the user limit to channel.\n", it->first);
 	}
+	else if (!std::strcmp(buffer, "PRINT\n")) {
+		for (std::map<int, Client>::iterator ite = ServerClients.begin(); ite != ServerClients.end(); ite++) {
+			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
+			std::cout << GREEN << " * Client Socket   = " << RESET << ite->first << std::endl;
+			std::cout << GREEN << " * Client NickName = " << RESET << ite->second.nickname << std::endl;
+			std::cout << GREEN << " * Client UserName = " << RESET << ite->second.username << std::endl;
+			if (ite->second.isRegistred == true)
+				std::cout << GREEN << " * Client Status   = " << RESET << "Registred" << std::endl;
+			else
+				std::cout << GREEN << " * Client Status   = " << RESET << "Not Registred" << std::endl;
+			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
+		}
+	}
 	else {
 		// You can put your functions here
 		// if you want to send a message to a client use : mySend("Your Message", it->first)
 		// Notice : dont change the second parameter of mySend() ==> it->first
+		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
+			mySend(" * Error 461 : You need to be authenticated before using this command.\n", it->first);
+			return ;
+		}
 		mySend(" * Success   : Canis Lupus part here.\n", it->first);
 	}
 }
@@ -258,13 +262,13 @@ void	Server::mySend(const char *msg, int clientSocket) {send(clientSocket, msg, 
 void	Server::addClient(int clientSocket)
 {
 	Client	client;
-	Server::clientDB.insert(std::make_pair(clientSocket, client));
+	Server::ServerClients.insert(std::make_pair(clientSocket, client));
 }
 
 std::map<int, Client>::iterator	Server::findSocket(int clientSocket)
 {
-	std::map<int, Client>::iterator	it = Server::clientDB.begin();
-	while (it != Server::clientDB.end()) {
+	std::map<int, Client>::iterator	it = Server::ServerClients.begin();
+	while (it != Server::ServerClients.end()) {
 		if (it->first == clientSocket)
 			break;
 		else

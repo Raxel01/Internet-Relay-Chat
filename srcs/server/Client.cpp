@@ -4,9 +4,9 @@ Client::Client()
 {
 	clientSocket = 0;
 	ipAdress = "";
-	userName = "";
-	nickName = "";
+	username = "";
+	nickname = "";
 	isRegistred = false;
-	isNickName = false;
-	isUserName = false;
+	isnickname = false;
+	isusername = false;
 }
