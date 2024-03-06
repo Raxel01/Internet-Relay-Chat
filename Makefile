@@ -6,42 +6,84 @@
 #    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/03/05 05:00:01 by mbachar          ###   ########.fr        #
+#    Updated: 2024/03/06 13:05:14 by mbachar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME         =   ircserv
+#####################################################
+#					Mandatory Part					#
+#####################################################
+MAN_NAME		=	ircserv
 
-SERVERPATH  =  ./srcs/server
+MAN_SERVERPATH	=	./mandatory/srcs/server
 
-CMDPATH     = ./srcs/commands
+MAN_CMDPATH		=	./mandatory/srcs/commands
 
-SRC         =   main.cpp \
-                $(SERVERPATH)/Server.cpp \
-                $(SERVERPATH)/Client.cpp \
-                $(SERVERPATH)/utils.cpp
+MAN_SRC			=	./mandatory/main.cpp \
+					$(MAN_SERVERPATH)/Server.cpp \
+					$(MAN_SERVERPATH)/Client.cpp \
+					$(MAN_SERVERPATH)/utils.cpp
 
-INCLUDE     =   ./headers/Server.hpp ./headers/Client.hpp
+MAN_INCLUDE		=	./mandatory/headers/Server.hpp ./mandatory/headers/Client.hpp
 
-CXX         =   c++
+MAN_OBJ			=	${MAN_SRC:.cpp=.o}
 
-OBJ = ${SRC:.cpp=.o}
+#####################################################
+#					Bonus	Part					#
+#####################################################
+BONUS_NAME			=	ircserv_bonus
 
-CXXFLAGS    =   -std=c++98 -Wall -Wextra -Werror -g -fsanitize=address
+BONUS_SERVERPATH	=	./bonus/srcs/server
 
-all : $(NAME)
+BONUS_BOTPATH		=	./bonus/srcs/bot
 
-$(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
+BONUS_CMDPATH		=	./bonus/srcs/commands
 
-%.o : %.cpp $(INCLUDE)
+BONUS_SRC			=	./bonus/main.cpp \
+						$(BONUS_SERVERPATH)/Server.cpp \
+						$(BONUS_SERVERPATH)/Client.cpp \
+						$(BONUS_SERVERPATH)/utils.cpp \
+						$(BONUS_BOTPATH)/Bot.cpp
+
+BONUS_INCLUDE		=	./bonus/headers/Server.hpp ./bonus/headers/Client.hpp ./bonus/headers/Bot.hpp
+
+BONUS_OBJ			=	${BONUS_SRC:.cpp=.o}
+
+#####################################################
+CXX				=	c++
+
+CXXFLAGS		=	-std=c++98 -Wall -Wextra -Werror -g -fsanitize=address
+
+#####################################################
+#					Mandatory Part					#
+#####################################################
+all : $(MAN_NAME)
+
+$(MAN_NAME): $(MAN_OBJ)
+	$(CXX) $(CXXFLAGS) $(MAN_OBJ) -o $(MAN_NAME)
+
+%.o : %.cpp $(MAN_INCLUDE)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+#####################################################
+#					Bonus	Part					#
+#####################################################
+bonus : $(BONUS_NAME)
+
+$(BONUS_NAME): $(BONUS_OBJ)
+	$(CXX) $(CXXFLAGS) $(BONUS_OBJ) -o $(BONUS_NAME)
+
+%.o : %.cpp $(BONUS_INCLUDE)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+#####################################################
 clean :
-	rm -fr $(OBJ)
+	rm -fr $(MAN_OBJ)
+	rm -fr $(BONUS_OBJ)
 
 fclean : clean
-	rm -fr $(NAME)
+	rm -fr $(MAN_NAME)
+	rm -fr $(BONUS_NAME)
 
 re : fclean all
 
