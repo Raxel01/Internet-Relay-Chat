@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:15:00 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 04:14:38 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:44:55 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #define    UNKNOW     "UNKNOW"
 #define    IGNORE     "IGNORE"
 #define    CONTINUE   "CONTINUE"
+#define    QUIT       "QUIT"
 
 
 class ReforMessage

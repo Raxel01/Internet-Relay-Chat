@@ -6,12 +6,13 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 04:17:28 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 12:18:36 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ChatRoom.hpp"
 
+std::vector<ChatRoom>   GlobalServerData::ServerChannels; // all serverchannel
 
 std::string MYhost::GetHost()
 {
@@ -32,7 +33,6 @@ ChatRoom::ChatRoom(){}
 int GlobalServerData::LastChannelUser = -1;
 
 ChatRoom::ChatRoom(std::string& Creator, std::string& SetRoomName): _RoomName(SetRoomName), _ChatKey(""){
-    CreationTime = clock();
     // _Members.push_back("@" + Creator);
     _Mediators.push_back("@" + Creator);
     _AllowedUsers = LimitUsers;
@@ -44,15 +44,17 @@ ChatRoom::ChatRoom(std::string& Creator, std::string& SetRoomName): _RoomName(Se
 
 /*Don't Forget That IF NO MEDIATOR THE CHANNEL wILL BE DESTROYEED*/
 ChatRoom::~ChatRoom(){
-    Destruction = clock();
     if (GlobalServerData::LastChannelUser != -1){
-        std::string response =":" + MYhost::GetHost() + " 999 " + "SaHit : You are Last Warrior That Leave ..." + this->_RoomName + "\n";
-            response += ":" + MYhost::GetHost() + " 999 " + "Channel Duration was : " + std::to_string( Destruction - CreationTime / CLOCKS_PER_SEC ) + " SECOND\n";
-                send(GlobalServerData::LastChannelUser, response.c_str(), response.length(), 0);
-                    GlobalServerData::LastChannelUser = -1;
+        time_t theTime = time(NULL);
+        std::string response =":" + MYhost::GetHost() + " 999 " + "SaHit ~Good By :> Last Warrior / No Admin ..." + this->_RoomName + "\n";
+            response += ":" + MYhost::GetHost() + " 999 " + "Channel Breaked RIP : " + \
+                ctime(&theTime);
+                    send(GlobalServerData::LastChannelUser, response.c_str(), response.length(), 0);
+                        GlobalServerData::LastChannelUser = -1;
     }
 }
 void            ChatRoom::getelems(){
+    std::cout << "_____________________________________________________"<< std::endl;
     DEQUE::iterator it = _Mediators.begin();
     
     while (it != _Mediators.end()){
@@ -84,6 +86,7 @@ void            ChatRoom::getelems(){
 }
 
 std::string     ChatRoom::MembersList(){
+    
     std::string list(":");
     size_t i = -1;
     while (++i < _Mediators.size()){

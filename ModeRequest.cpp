@@ -1,22 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   InviteRequest.hpp                                  :+:      :+:    :+:   */
+/*   ModeRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/03 09:56:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 15:06:57 by abait-ta         ###   ########.fr       */
+/*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
+/*   Updated: 2024/03/06 17:35:18 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "ModeRequest.hpp"
 
-#include <iostream>
-#include <sstream>
-#include <deque>
-
-#define NOTICE_INVITED 1
-#define DONT_NOTICE    0
-
-void    InviteMessage(std::string& clientMsg, int __fd);
+void    ModeMessage(std::string& clientMsg, int __fd)
+{
+    
+}

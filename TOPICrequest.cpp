@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 04:35:20 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 10:40:13 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 16:52:10 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,65 +16,51 @@
 #include "GlobalException.hpp"
 #include "ChatRoom.hpp"
 
+// Pay Attention You should Change a lot of things in the Code
 void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std::string& clientMsg, int __fd, std::string& NEWTOPIC)
 {
     Roomiter    RoomObj;
     std::string response;
-    std::string owner("abdelali");
     
-    // Pay Attention You should Change a lot of things in the Code
     RoomObj = FindUsingName(channelName);
     try
     {
-        // (*RoomObj)._ChatTopic = "TOPIN HIYA L*** ASSAT"; //
         if (RoomObj != GlobalServerData::ServerChannels.end()) // check if there is a channelwith this Name
-        { if((*RoomObj).IsalreadyMember(owner)){//change it;
+        { if((*RoomObj).IsalreadyMember(Server::ServerClients.at(__fd).nickname) == true){ //Requester is a Member
                 if(OccurSpace == 1) //Just Get channel Topic
-                {// <-  :testnet.ergo.chat 331 oktal #toran :No topic is set
-                    if ((*RoomObj)._ChatTopic.size() != 0)
-                    {
-                        std::cout << "Olaala" << std::endl;
-                    response = NumericReplies(MYhost::GetHost(), "332", "USERNICKNAME", channelName , (*RoomObj).getTOPIC()); // Send Topic to user;
-                        send(__fd, response.c_str(), response.length(), 0);
-                            // <-  :testnet.ergo.chat 332 fort #BOLAS KolchiLeft
+                {
+                    if ((*RoomObj)._ChatTopic.size() != 0) { // So Topic is set get it 
+                        response = NumericReplies(MYhost::GetHost(), "332", Server::ServerClients.at(__fd).nickname, (*RoomObj)._RoomName , (*RoomObj).getTOPIC()); // Send Topic to user;
+                            send(__fd, response.c_str(), response.length(), 0);
                     }
                     else{ // No topic is seet
-                    // std::cout << " Seirr T9eweeeeed "<< std::endl;
-                        response = NumericReplies(MYhost::GetHost(), "331", "USERNICKNAME", channelName, ":No Topic is set");
-                        std::cout << __fd << std::endl;
-                            ssize_t a = send(__fd, response.c_str(), response.length(), 0);
-                            std::cout << "Send Status " << a << std::endl;
+                        response = NumericReplies(MYhost::GetHost(), "331", Server::ServerClients.at(__fd).nickname, (*RoomObj)._RoomName, ":No Topic is set");
+                            send(__fd, response.c_str(), response.length(), 0);
                     }
                 }
                 else//Try to set the [setTOPIC to this CHANNEL]
                 {
-                    if ((*RoomObj).TopicRestriction == true && (*RoomObj).IsMediator(owner) || (*RoomObj).TopicRestriction == false) // Change by user name
+                    if ((*RoomObj).TopicRestriction == true && (*RoomObj).IsMediator(Server::ServerClients.at(__fd).nickname) || (*RoomObj).TopicRestriction == false) // Change by user name
                     {
                         (*RoomObj).SetTOPIC(NEWTOPIC);
-                        std::cout << " Yes Here Brooo "<< std::endl;
-                        send(__fd, (*RoomObj)._ChatTopic.c_str(), (*RoomObj)._ChatTopic.length(), 0);
+                        response = ":" + Server::ServerClients.at(__fd).nickname + "!~" + Server::ServerClients.at(__fd).username + " TOPIC " + (*RoomObj)._RoomName + " " +(*RoomObj)._ChatTopic + "\n";
                         //|// Broadcastto All Users that new topic set as follow
-                        //| <-  :fort!~u@qk3i8byd6tfyg.irc TOPIC #ola newTOPICACHABAB
+                            // <-  :oflat!~u@qk3i8byd6tfyg.irc TOPIC #tor abdelali
                         //| 
+                        BroadcastMessage("", "", RoomObj, response);
                         //See What Will be Broadcasted Here
                     }
-                    else
-                    {
-                        // <-  :testnet.ergo.chat 482 oktal #fortan :You're not a channel operator;
-                        std::string response (NumericReplies(MYhost::GetHost(), "482", "NICKNAME", channelName, "You are not CHANNEL CHANOP"));
+                    else{
+                        std::string response (NumericReplies(MYhost::GetHost(), "482", Server::ServerClients.at(__fd).nickname, (*RoomObj)._RoomName, "You are not CHANNEL CHANOP"));
                             send(__fd, response.c_str(), response.length(), 0);
-                    }
-                    //TryToset the channelTopic . . .
+                    } //TryToset the channelTopic . . .
                 } 
-            }else
-            {
-                response = NumericReplies(MYhost::GetHost(), "442", "NICKNAME", channelName, "You are not on this channel");
+            } else{
+                response = NumericReplies(MYhost::GetHost(), "442", Server::ServerClients.at(__fd).nickname, (*RoomObj)._RoomName, "You are not on this channel");
                 throw EX_NOTONCHANNEL();
             }
-        }
-        else
-        {   
-            response = NumericReplies(MYhost::GetHost(), "403", "NICKNAME", channelName, "No such channel");
+        } else {   
+            response = NumericReplies(MYhost::GetHost(), "403", Server::ServerClients.at(__fd).nickname, channelName, "No such channel");
                 throw Ex_NOSUCHCHANNEL();
             }
     }

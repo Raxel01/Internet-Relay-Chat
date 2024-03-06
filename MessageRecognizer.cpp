@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 04:29:07 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:33:57 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 # include   "GlobalException.hpp"
 # include   "KickRequest.hpp"
 # include   "PartRequest.hpp"
-#include    "TOPICrequest.hpp"
-#include    "InviteRequest.hpp"
+# include   "TOPICrequest.hpp"
+# include   "InviteRequest.hpp"
+# include   "ModeRequest.hpp"
 
 std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NICKNAME, std::string CMD, std::string RAISON)
 {
@@ -33,13 +34,19 @@ std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
     }
     else if (cmd.compare(PART) == 0)
     {
-        // PartMessage(clientMsg, __fd);
+        PartMessage(clientMsg, __fd);
         return (PART);
     }
     else if (cmd.compare(PONG) != 0){
         std::string response(NumericReplies("localhost", "421", "canis_lupus", cmd, "Unknown command"));
         send (__fd, response.c_str(), response.length(), 0);
         return  UNKNOW;
+    }
+    else if (cmd.compare(QUIT) == 0)
+    {
+        std::cout << " Wait We Will implement it "<< std::endl;
+        // gotochanneland remove this stupid user (__Fd)
+        //your task jdshfgkjdhsg
     }
     return IGNORE;
 }
@@ -48,19 +55,19 @@ std::string RecognizeCmd(std::string& cmd, std::string& clientMsg, int __fd)
 {
          if (cmd.compare(KICK) == 0)
          {
-            // KickMessage(clientMsg, __fd);
+            KickMessage(clientMsg, __fd);
                 return KICK;
     }
     else if (cmd.compare(INVITE) == 0){
-            // InviteMessage(clientMsg, __fd);
+            InviteMessage(clientMsg, __fd);
                 return INVITE;
     }
     else if (cmd.compare(TOPIC)  == 0){
-        // TOPICmessage(clientMsg, __fd);
+        TOPICmessage(clientMsg, __fd);
                 return TOPIC;
     }
     else if (cmd.compare(MODE)   == 0){
-        // ModeMessage(clientMsg);
+        ModeMessage(clientMsg, __fd);
                 return (MODE);
     }
     return RegularUsers(cmd, clientMsg, __fd);

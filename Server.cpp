@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 08:08:06 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 10:51:08 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@
 
 //Message Grammar ==> |:Prefix cmd param_lis<...>|
 
+std::map<int, Client> Server::ServerClients;
 /******************************************************************/
 Client::Client()
 {
@@ -248,6 +249,7 @@ void Server::main_loop()
                                 this->authenticate(buffer, pollfds[i].fd);
                                 else
                                 {
+                                    //Buffer
                                     // //
                                     asString = buffer;
                                     ReforMessage::GlobalReform(asString);

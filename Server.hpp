@@ -77,7 +77,7 @@ class Server
     void create_server();
     void accept_connection();
     std::vector<struct pollfd> pollfds;
-    std::map<int, Client> ServerClients;
+    static std::map<int, Client> ServerClients;
     // hfjghjkhdfjk;hdf()
     // std::map<std::stringChannel> channels;
     void authenticate(std::string buffer, int fd);

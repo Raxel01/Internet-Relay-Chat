@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/05 08:17:27 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 17:28:13 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,68 +28,69 @@ void    FullChannelList(std::string& channelList, DEQUE& channelVector)
 }
 
 //STOP IN 02/03/ :8 : 36
+
 void    PartProcessor(DEQUE& Channels, int __fd, std::string& Reason)
 {
     size_t i = -1;
-    std::string owner("abdelali");
     Roomiter Finder;
     std::string response;
     
     while (++i < Channels.size())
     {
-        
         Finder = FindUsingName(Channels.at(i));
         try{
         if (Finder != GlobalServerData::ServerChannels.end())
         {
-            if ((*Finder).IsalreadyMember(owner) == true)//Server::ServerClient.at(__fd).nickname;
+            if ((*Finder).IsalreadyMember(Server::ServerClients.at(__fd).nickname) == true)//Server::ServerClient.at(__fd).nickname;
             {
-                if ((*Finder).IsMediator(owner) == true){
-                    
-                    (*Finder).PartMediator(owner); //  owner to Change
-                    /*Broadcast*/
-                    std::cout << " Mediator "<< std::endl;
+                response = ":" + Server::ServerClients.at(__fd).nickname + "!~" + Server::ServerClients.at(__fd).username +"@"+ Server::ServerClients.at(__fd).client_ip + " PART " + (*Finder)._RoomName + " :" + Reason + "\n";
+                if ((*Finder).IsMediator(Server::ServerClients.at(__fd).nickname) == true){
+                    BroadcastMessage("", "" , Finder, response);
+                    (*Finder).PartMediator(Server::ServerClients.at(__fd).nickname); //  owner to Change
+                    std::cout << " Mediator "<< std::endl; // toRemove
                 }
-                else if ((*Finder).IsRegularUser(owner) != (*Finder)._Members.end()){//User is a member
-                    //obj._Members.erase((obj).ISregularUser(owner)) nickname of The User
+                else if ((*Finder).IsRegularUser(Server::ServerClients.at(__fd).nickname) != (*Finder)._Members.end()){//User is a member
                         BroadcastMessage("", "" , Finder, response);
-                        (*Finder)._Members.erase((*Finder).IsRegularUser(owner));
-                        std::cout << "Not Mediator"<< std::endl;
+                        (*Finder)._Members.erase((*Finder).IsRegularUser(Server::ServerClients.at(__fd).nickname));
+                        std::cout << " Not Mediator "<< std::endl; // to remove
                 }
                 /* I think I'll Broadcast Here */
-                if ((*Finder).Roomsize() == 0 || (*Finder)._Mediators.size() == 0){
+                if ((*Finder).Roomsize() == 0 || (*Finder)._Mediators.size() == 0){// if no admin or no member the Channel Will be Destroyed
                         GlobalServerData::LastChannelUser = __fd;
                         GlobalServerData::ServerChannels.erase(Finder);
                     }
             }
             else{
-                response = NumericReplies(MYhost::GetHost(), "442", "NICKNAME", Channels.at(i), "You are not on this channel");
+                response = NumericReplies(MYhost::GetHost(), "442", Server::ServerClients.at(__fd).nickname, Channels.at(i), "You are not on this channel");
                 throw EX_NOTONCHANNEL();
             }
         }
-        else
-        {
-            response = NumericReplies(MYhost::GetHost(), "403", "NICKNAME", Channels.at(i), "No such channel");
+        else{
+            response = NumericReplies(MYhost::GetHost(), "403", Server::ServerClients.at(__fd).nickname, Channels.at(i), "No such channel");
             throw Ex_NOSUCHCHANNEL();
         }
-        }
-        catch (std::exception& e){
+        }catch (std::exception& e){
             send(__fd, response.c_str(), response.length(), 0);
-            response.clear();
-            e.what();
+               response.clear();
+                  e.what();
         }
         
     }
 }
 
+/*
+    @ -: This Message let a user Tobe out OfThe List of channels if he is a member
+      - ofCours there is a lot of Conditions to Check
+      -From abdelali use your mind :)
+*/
 void    PartMessage(std::string& clientMsg, int __fd)
 {
     
     size_t OccurSpace = std::count(clientMsg.begin(), clientMsg.end(), ' ');
     
     if (OccurSpace == 0 || clientMsg.compare("PART :") == 0){
-        std::string response = ":" + MYhost::GetHost() + " 461 " + " NICKNAME " + " PART " + ": NO ENOUGH PARAMETERS" + "\n" +
-            NumericReplies(MYhost::GetHost(), "999", "NICKNAME", "PART", ":<channel,channel1,...> [<reason>]");
+        std::string response = ":" + MYhost::GetHost() + " 461 " + Server::ServerClients.at(__fd).nickname + " PART " + ": NO ENOUGH PARAMETERS" + "\n" +
+            NumericReplies(MYhost::GetHost(), "999", Server::ServerClients.at(__fd).nickname, "PART", ":<channel,channel1,...> [<reason>]");
             send(__fd, response.c_str(), response.length(), 0);
     }
     else

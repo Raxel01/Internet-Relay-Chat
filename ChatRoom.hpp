@@ -6,19 +6,21 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 08:08:26 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 11:43:35 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <deque>
-#include <map>
-#include <ctime>
+# include <iostream>
+# include <sstream>
+# include <deque>
+# include <map>
+# include <ctime>
 # include <unistd.h>
-# include <sys/socket.h>ƒ
+# include <sys/socket.h>
+# include <vector>
+#include  "Server.hpp" // May need to change the path
 
 #define LimitUsers 900
 // class Clients; need it to Store 
@@ -27,7 +29,7 @@ typedef std::deque<std::string> DEQUE ;
 class ChatRoom
 {
     public :
-        clock_t               CreationTime      ;
+        // clock_t               CreationTime      ;
         std::string           _RoomName         ;
         std::string           _ChatTopic        ;
         DEQUE                _Members           ;
@@ -41,7 +43,7 @@ class ChatRoom
         bool                 HaveLimitUser      ; //+l
         bool                 TopicRestriction   ;   //+t [+t] seTtoknow Who will seet the Topic
         bool                 TopicStatus        ;
-        clock_t              Destruction        ;
+        // clock_t              Destruction        ;
     public :
         ChatRoom();
         ChatRoom(std::string& Creator,std::string& SetRoomName);

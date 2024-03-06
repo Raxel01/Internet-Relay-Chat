@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 18:16:11 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 11:33:29 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 13:47:51 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,9 @@ const char * EX_ALREADYINCHANNEL::what() const throw(){
 }
 
 const char * EX_DUPLICATE_INVITE::what() const throw(){
+    return "";
+}
+
+const char * EX_VALIDINVITE::what() const throw(){
     return "";
 }
