@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 06:06:28 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 08:08:06 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 //     "\033[0m";
 
 /******************************************************************/
-
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -33,6 +32,8 @@
 #include <list>
 #include "ReforMessage.hpp"
 #include "ChatRoom.hpp"
+
+
 // #include "MessageRecognizer.cpp"
 
 // const char *CMD[] ={ "KICK", "INVITE", "MODE", "TOPIC", "JOIN", "PART", "PONG", "UNKNOW", "IGNORE"};
@@ -182,9 +183,9 @@ void Server::accept_connection()
     ip = inet_ntoa(client_addr.sin_addr);
     pollfds.push_back(fd);
     Client client;
-    this->clients[client_fd] = client;
-    this->clients[client_fd].client_fd = client_fd;
-    this->clients[client_fd].client_ip = ip;
+    this->ServerClients[client_fd] = client;
+    this->ServerClients[client_fd].client_fd = client_fd;
+    this->ServerClients[client_fd].client_ip = ip;
 }
 
 void Server::main_loop()
@@ -231,7 +232,7 @@ void Server::main_loop()
                         {
                             std::cerr << "Connection closed" << std::endl;
                             close(pollfds[i].fd);
-                            clients.erase(pollfds[i].fd);
+                            ServerClients.erase(pollfds[i].fd);
                             pollfds.erase(pollfds.begin() + i);
                             break;
                         }
@@ -243,14 +244,23 @@ void Server::main_loop()
                             // I will add the parsing of the commands here : ahmed
                             try
                             {
-                                if(!this->clients[pollfds[i].fd].isconnected)
+                                if(!this->ServerClients[pollfds[i].fd].isconnected)
                                 this->authenticate(buffer, pollfds[i].fd);
                                 else
                                 {
+                                    // //
                                     asString = buffer;
                                     ReforMessage::GlobalReform(asString);
                                     std::cout << ReforMessage::FinalMessage << std::endl;
-                                    MediatorCommand(ReforMessage::FinalMessage, pollfds[i].fd);  //                   
+                                    MediatorCommand(ReforMessage::FinalMessage, pollfds[i].fd);  //   
+                                    
+                                    // std::vector<ChatRoom>::iterator iter = GlobalServerData::ServerChannels.begin();
+                                    // std::cout << "_____________________________________________"<< std::endl;
+                                    // while (iter != GlobalServerData::ServerChannels.end()){
+                                    //     std::cout << (*iter).GetRoomname()<< std::endl;
+                                    //     iter++;
+                                    // }                
+                                    // std::cout << "_____________________________________________"<< std::endl;
                                 }
                             }
                             catch(const std::exception& e)
@@ -264,7 +274,7 @@ void Server::main_loop()
                 else if (pollfds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
                 {
                     close(pollfds[i].fd);
-                    clients.erase(pollfds[i].fd);
+                    ServerClients.erase(pollfds[i].fd);
                     pollfds.erase(pollfds.begin() + i);
                     continue;
                 }
@@ -310,16 +320,16 @@ void Server::authenticate(std::string buffer,int fd)
    int pos;
 
     
-    this->clients[fd].msg.append(buffer);
+    this->ServerClients[fd].msg.append(buffer);
 
-    if(this->clients[fd].msg.find("\n") == std::string::npos)
+    if(this->ServerClients[fd].msg.find("\n") == std::string::npos)
         return;
-    ss << this->clients[fd].msg;
-    this->clients[fd].msg.clear();
+    ss << this->ServerClients[fd].msg;
+    this->ServerClients[fd].msg.clear();
     ss >> cmd;
     ss >> key;
 
-    if (cmd == "PASS" && !this->clients[fd].is_pass)
+    if (cmd == "PASS" && !this->ServerClients[fd].is_pass)
     {
         pos  = buffer.find("\r\n") != std::string::npos ? 2 : 1;
         key  = buffer.substr(buffer.find(key), buffer.size() - buffer.find(key) - pos);
@@ -329,19 +339,19 @@ void Server::authenticate(std::string buffer,int fd)
             send(fd, msg.c_str(), msg.size(), 0);
             return;
         }
-        this->clients[fd].is_pass= true;
+        this->ServerClients[fd].is_pass= true;
     }
-    if (cmd == "NICK" && !this->clients[fd].isKeySet)
+    if (cmd == "NICK" && !this->ServerClients[fd].isKeySet)
     {
 
-        if (!this->clients[fd].checkRegNick(key))
+        if (!this->ServerClients[fd].checkRegNick(key))
         {
             std::string msg = Client::messageGenerator("ERROUR",ERR_NICKNAMEINUSE,"*" ,"invalid nickname");
             send(fd, msg.c_str(), msg.size(), 0);
             return;
         }
-        map<int, Client>::iterator it = this->clients.begin();
-        while (it != this->clients.end())
+        map<int, Client>::iterator it = this->ServerClients.begin();
+        while (it != this->ServerClients.end())
         {
             if (it->second.getNick() == key)
             {
@@ -351,27 +361,27 @@ void Server::authenticate(std::string buffer,int fd)
             }
             it++;
         }
-        this->clients[fd].setNick(key);
-        this->clients[fd].isKeySet = true;
+        this->ServerClients[fd].setNick(key);
+        this->ServerClients[fd].isKeySet = true;
     }
-    if (cmd == "USER" && !this->clients[fd].isUsrnameSet)
+    if (cmd == "USER" && !this->ServerClients[fd].isUsrnameSet)
     {
-        if (!this->clients[fd].checkRegNick(key))
+        if (!this->ServerClients[fd].checkRegNick(key))
         {
             std::string msg = Client::messageGenerator("ERROUR",ERR_INVALIDUSERNAME,"*" ,"already in use");
             send(fd, msg.c_str(), msg.size(), 0);
             return;
         }
-        this->clients[fd].setUsername(key);
-        this->clients[fd].isUsrnameSet = true;
+        this->ServerClients[fd].setUsername(key);
+        this->ServerClients[fd].isUsrnameSet = true;
     }
-    if (this->clients[fd].isUsrnameSet && this->clients[fd].isKeySet && this->clients[fd].is_pass)
+    if (this->ServerClients[fd].isUsrnameSet && this->ServerClients[fd].isKeySet && this->ServerClients[fd].is_pass)
     {
         std::cout << "connected susccessfully\n";
-        this->clients[fd].isconnected = true;
-        std::string msg = Client::messageGenerator("localhost",RPL_WELCOME,this->clients[fd].getNick() ,"authenticated successfully");
+        this->ServerClients[fd].isconnected = true;
+        std::string msg = Client::messageGenerator("localhost",RPL_WELCOME,this->ServerClients[fd].getNick() ,"authenticated successfully");
         send(fd, msg.c_str(), msg.size(), 0);
-        msg = Client::messageGenerator("localhost",RPL_WELCOME,this->clients[fd].getNick() ,"Welcome to the server " + this->clients[fd].getNick());
+        msg = Client::messageGenerator("localhost",RPL_WELCOME,this->ServerClients[fd].getNick() ,"Welcome to the server " + this->ServerClients[fd].getNick());
         send(fd, msg.c_str(), msg.size(), 0);
     }
     return;

@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:16:29 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 07:03:18 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 04:29:05 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ void    ReforMessage::TriMessage(){
     if (start != std::string::npos && end != std::string::npos){
         FinalMessage = FinalMessage.substr(start, end - start + 1);
     }
-
 }
 
 void    ReforMessage::Reinitializer()

@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 04:55:30 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/05 08:17:27 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,10 @@ void    PartProcessor(DEQUE& Channels, int __fd, std::string& Reason)
                         std::cout << "Not Mediator"<< std::endl;
                 }
                 /* I think I'll Broadcast Here */
+                if ((*Finder).Roomsize() == 0 || (*Finder)._Mediators.size() == 0){
+                        GlobalServerData::LastChannelUser = __fd;
+                        GlobalServerData::ServerChannels.erase(Finder);
+                    }
             }
             else{
                 response = NumericReplies(MYhost::GetHost(), "442", "NICKNAME", Channels.at(i), "You are not on this channel");

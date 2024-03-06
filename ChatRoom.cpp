@@ -6,26 +6,52 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 04:27:19 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 04:17:28 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ChatRoom.hpp"
 
 
+std::string MYhost::GetHost()
+{
+        char TheHost[256];
+        int status;
+
+        status = gethostname(TheHost, sizeof(TheHost));
+        if (status == -1){
+            std::cout << strerror(errno) << std::endl;
+            // exit(1);
+            throw std::runtime_error("Trouble when Getting your hostname"); //Pay attention
+        }
+    return (TheHost);
+}
+
 ChatRoom::ChatRoom(){}
 
-ChatRoom::~ChatRoom(){}
+int GlobalServerData::LastChannelUser = -1;
 
 ChatRoom::ChatRoom(std::string& Creator, std::string& SetRoomName): _RoomName(SetRoomName), _ChatKey(""){
+    CreationTime = clock();
     // _Members.push_back("@" + Creator);
     _Mediators.push_back("@" + Creator);
-    _AllowedUsers = 150;
+    _AllowedUsers = LimitUsers;
     keyStatus = false;
+    TopicStatus = false;
     _Acces_isInviteOnly = false;
     TopicRestriction = true; // Only Admin can set the  Channel Topic
 }
 
+/*Don't Forget That IF NO MEDIATOR THE CHANNEL wILL BE DESTROYEED*/
+ChatRoom::~ChatRoom(){
+    Destruction = clock();
+    if (GlobalServerData::LastChannelUser != -1){
+        std::string response =":" + MYhost::GetHost() + " 999 " + "SaHit : You are Last Warrior That Leave ..." + this->_RoomName + "\n";
+            response += ":" + MYhost::GetHost() + " 999 " + "Channel Duration was : " + std::to_string( Destruction - CreationTime / CLOCKS_PER_SEC ) + " SECOND\n";
+                send(GlobalServerData::LastChannelUser, response.c_str(), response.length(), 0);
+                    GlobalServerData::LastChannelUser = -1;
+    }
+}
 void            ChatRoom::getelems(){
     DEQUE::iterator it = _Mediators.begin();
     
@@ -121,11 +147,12 @@ bool    ChatRoom::IsalreadyMember(std::string& MayUser){
     return false;
 }
 
-const std::string&    ChatRoom::GetRoomname(){
+std::string&    ChatRoom::GetRoomname(){
        return _RoomName;
 }
+
 DEQUE::iterator            ChatRoom::IsRegularUser(std::string User){
-    
+
     DEQUE::iterator iter = _Members.begin();
     while (iter != _Members.end())
     {
@@ -158,10 +185,11 @@ std::string    ChatRoom::getTOPIC(){
     return this->_ChatTopic;
 }
 
-void            ChatRoom::SetTOPIC(std::string TOPIC)
+void            ChatRoom::SetTOPIC(std::string Topic)
 {
     _ChatTopic.clear();
-    _ChatTopic = TOPIC;
+    _ChatTopic = Topic;
+    TopicStatus = true;
 }
 
 void    ChatRoom::BanThisUser(std::string User)
@@ -183,4 +211,36 @@ void    ChatRoom::BanThisUser(std::string User)
         _Mediators.erase(OPFINDER);
         _BannedUsers.push_back(User);
     }
+}
+/*No check For duplicate Invite implement it on any CODE...*/
+void            ChatRoom::AddToInvited(std::string& NewInvited)
+{
+    _InviteList.push_back(NewInvited);
+}
+
+void            ChatRoom::PardonUser(std::string USER){
+
+    DEQUE::iterator  OPFINDER = _Mediators.begin();
+    while (OPFINDER != _Mediators.end())
+    {
+        if ((*OPFINDER) == USER)
+            break;
+        OPFINDER++;
+    }
+    _BannedUsers.erase(OPFINDER);//User debloqued
+}
+
+void            ChatRoom::eraseFromInvList(std::string Invited)
+{
+    if (this->IsInviteList(Invited) == true)
+    {
+        DEQUE::iterator iter = _InviteList.begin();
+        while(iter != _InviteList.end())
+        {
+            if (*iter == Invited)
+                break;
+            iter++;
+        }
+        _InviteList.erase(iter);
+    } 
 }

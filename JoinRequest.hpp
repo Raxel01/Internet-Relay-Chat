@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 06:38:27 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 01:44:58 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 04:29:03 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,11 @@
 # include <iostream>
 # include <vector>
 # include <sstream>
-# include <unistd.h>
 # include <sys/socket.h>
 
 
 
 class ChatRoom;
-
 
 typedef  std::vector<ChatRoom>::iterator Roomiter;
 
@@ -44,14 +42,6 @@ class InvalidChannelName : public std::exception{
             virtual const char* what() const throw(); 
 };
 
-class MYhost // GetTheHost
-{
-    public :
-    static std::string GetHost();
-};
-
-
-
 void        ExtractChannels( std::string& ClientMsg, std::vector<std::string>& Channels );
 void        ExtractKeys( std::string& ClientMsg, std::vector<std::string>& keys );
 void        JoinStart( int __fd, std::string& clientMsg, Myvector&  Channels, Myvector& keys );
@@ -59,6 +49,6 @@ bool        FollowGrammar( std::string &channel );
 Roomiter    FindUsingName( std::string& channelName );
 std::string ToUpper( std::string channel );
 void        BroadcastMessage( std::string user, std::string ChannelName, \
-        Roomiter& iter, std::string response );
-void    JoinMessage( std::string& clientMsg, int __fd );
-void    JoinProcessor( std::string& clientMsg, int __fd );
+            Roomiter& iter, std::string response );
+void        JoinMessage( std::string& clientMsg, int __fd );
+void        JoinProcessor( std::string& clientMsg, int __fd );

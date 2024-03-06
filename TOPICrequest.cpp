@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 04:35:20 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 06:34:59 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 10:40:13 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,8 @@ void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std
     try
     {
         // (*RoomObj)._ChatTopic = "TOPIN HIYA L*** ASSAT"; //
-        if (RoomObj != GlobalServerData::ServerChannels.end())
-        {
-            if((*RoomObj).IsalreadyMember(owner)){//change it;
+        if (RoomObj != GlobalServerData::ServerChannels.end()) // check if there is a channelwith this Name
+        { if((*RoomObj).IsalreadyMember(owner)){//change it;
                 if(OccurSpace == 1) //Just Get channel Topic
                 {// <-  :testnet.ergo.chat 331 oktal #toran :No topic is set
                     if ((*RoomObj)._ChatTopic.size() != 0)
@@ -62,35 +61,28 @@ void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std
                     else
                     {
                         // <-  :testnet.ergo.chat 482 oktal #fortan :You're not a channel operator;
-        std::string response (NumericReplies(MYhost::GetHost(), "482", "NICKNAME", channelName, "You are not CHANNEL CHANOP"));
+                        std::string response (NumericReplies(MYhost::GetHost(), "482", "NICKNAME", channelName, "You are not CHANNEL CHANOP"));
                             send(__fd, response.c_str(), response.length(), 0);
-                        // response = 
                     }
                     //TryToset the channelTopic . . .
-                    
-                }
-                
+                } 
             }else
             {
                 response = NumericReplies(MYhost::GetHost(), "442", "NICKNAME", channelName, "You are not on this channel");
                 throw EX_NOTONCHANNEL();
             }
-            
         }
         else
         {   
             response = NumericReplies(MYhost::GetHost(), "403", "NICKNAME", channelName, "No such channel");
                 throw Ex_NOSUCHCHANNEL();
             }
-        
     }
     catch(std::exception& e)
     {send(__fd, response.c_str(), response.length(), 0);
         response.clear();
             e.what();
     }
-    
-
 }
 
 void    TOPICmessage(std::string& clientMsg, int __fd)
@@ -127,7 +119,6 @@ void    TOPICmessage(std::string& clientMsg, int __fd)
             }
         index++;
         }
-        
         TOPICprocessor(OccurSpace, channelName ,clientMsg, __fd, TOPIC);
     }
 }

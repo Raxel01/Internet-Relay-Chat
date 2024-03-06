@@ -23,10 +23,13 @@
 
 #define BUFFER_SIZE 512
 
+
 using namespace std;
+// Client::client_fd
+
 class Client 
 {
-    private:
+    public:
         string nickname;
         string username;
     public:
@@ -45,7 +48,7 @@ class Client
         static std::string messageGenerator(std::string prefix, std::string command, std::string params,std::string trail);
         bool checkRegNick(std::string nickname);
         // void join(std::string buffer,std::map<std::string,Channel> &channels);
-        // void priveMessage(std::string buffer,std::map<std::string, Channel> &channels, std::map<int, Client> &clients);
+        // void priveMessage(std::string buffer,std::map<std::string, Channel> &channels, std::map<int, Client> &ServerClients);
         // static std::string  messageGenerator(std::string prefix, std::string command, std::string params,std::string trail);
         // bool checkChanReg(std::string channel);
         Client();
@@ -59,7 +62,7 @@ class Client
 
 class Server 
 {
-    private:
+    public:
     int port;
     std::string password;
     int server_fd;
@@ -74,7 +77,7 @@ class Server
     void create_server();
     void accept_connection();
     std::vector<struct pollfd> pollfds;
-    std::map<int, Client> clients;
+    std::map<int, Client> ServerClients;
     // hfjghjkhdfjk;hdf()
     // std::map<std::stringChannel> channels;
     void authenticate(std::string buffer, int fd);

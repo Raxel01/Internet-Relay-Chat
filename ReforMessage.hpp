@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:15:00 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/02/26 16:47:35 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 04:14:38 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,18 @@
 /*
     @: Static memebers Class Constructor as Private  will never let the class Instanciated
 */
+
+#define    KICK       "KICK"
+#define    INVITE     "INVITE"
+#define    MODE       "MODE"
+#define    TOPIC      "TOPIC"
+#define    JOIN       "JOIN"
+#define    PART       "PART"
+#define    PONG       "PONG"
+#define    UNKNOW     "UNKNOW"
+#define    IGNORE     "IGNORE"
+#define    CONTINUE   "CONTINUE"
+
 
 class ReforMessage
 {

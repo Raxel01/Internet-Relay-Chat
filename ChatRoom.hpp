@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 03:49:29 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 08:08:26 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,19 @@
 #include <sstream>
 #include <deque>
 #include <map>
+#include <ctime>
+# include <unistd.h>
+# include <sys/socket.h>ƒ
 
-
+#define LimitUsers 900
 // class Clients; need it to Store 
 typedef std::deque<std::string> DEQUE ;
 
 class ChatRoom
 {
     public :
-        const std::string     _RoomName         ;
+        clock_t               CreationTime      ;
+        std::string           _RoomName         ;
         std::string           _ChatTopic        ;
         DEQUE                _Members           ;
         DEQUE                _BannedUsers       ;
@@ -37,18 +41,22 @@ class ChatRoom
         bool                 HaveLimitUser      ; //+l
         bool                 TopicRestriction   ;   //+t [+t] seTtoknow Who will seet the Topic
         bool                 TopicStatus        ;
+        clock_t              Destruction        ;
     public :
         ChatRoom();
         ChatRoom(std::string& Creator,std::string& SetRoomName);
         
         void            Addasmember(std::string& newMember);
         void            AddasMediator(std::string& NewMediator);
+        void            AddToInvited(std::string& NewInvited);
+        
         void            BanThisUser(std::string User);
+        void            PardonUser(std::string USER);//Remove FromBanList When invite
         std::string     getTOPIC();
-        void            SetTOPIC(std::string TOPIC);
+        void            SetTOPIC(std::string Topic);
+        void            eraseFromInvList(std::string Invited);
         // void            removeMember(std::string& tobeRemoved);
         void            PartMediator(std::string& toPart);
-
         bool            IsalreadyMember(std::string& MayUser);
         bool            IsMediator(std::string& MayMediator);
         bool            IsBanned(std::string& MayBanned);
@@ -56,15 +64,22 @@ class ChatRoom
         bool            IsInviteList(std::string& TargetUser);
         std::string     MembersList();
         void            getelems();
-        const std::string&    GetRoomname();
-        size_t          Roomsize();
+        std::string&    GetRoomname();
+        size_t                Roomsize();
         ~ChatRoom(); 
+};
+
+class MYhost // GetTheHost
+{
+    public :
+    static std::string GetHost();
 };
 
 
 class GlobalServerData{
     public :
         static std::vector<ChatRoom>   ServerChannels; // all serverchannel
+        static int LastChannelUser;
 };
 
 

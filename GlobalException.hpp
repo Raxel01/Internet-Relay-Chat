@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 18:16:10 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/01 23:49:15 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/03 11:33:27 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,16 @@ class EX_NOSUCHNICK : public std::exception
 class SELF_KICK :public std::exception
 {
     public :
+        virtual const char *what() const throw();
+};
+
+class EX_ALREADYINCHANNEL : public std::exception{
+    public :
+        virtual const char *what() const throw();
+};
+
+class EX_DUPLICATE_INVITE : public std::exception
+{
+     public :
         virtual const char *what() const throw();
 };

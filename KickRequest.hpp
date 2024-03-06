@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:43 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/02 04:33:30 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/06 04:14:17 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,6 @@
 #include <iostream>
 #include "JoinRequest.hpp"
 #include "ChatRoom.hpp"
-
-#define    KICK       "KICK"
-#define    INVITE     "INVITE"
-#define    MODE       "MODE"
-#define    TOPIC      "TOPIC"
-#define    JOIN       "JOIN"
-#define    PART       "PART"
-#define    PONG       "PONG"
-#define    UNKNOW     "UNKNOW"
-#define    IGNORE     "IGNORE"
-#define    CONTINUE   "CONTINUE"
-
 
 void                ExtractVictims(std::string& userList, std::vector<std::string>& Victims);
 void                KickExecutor(std::string&channelName , Roomiter& iter, int __fd, \

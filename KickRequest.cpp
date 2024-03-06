@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:41 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/03 05:21:26 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/04 09:18:19 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,16 @@ void    KickExecutor(std::string&channelName , Roomiter& iter, int __fd,std::vec
     std::string owner("abdelali"); // remove after;
     std::string response;
     while (++i < Victims.size()){
-        if (i != 0)
+        /*[[[*/
+        if (i != 0)//remove this shiit
             (*iter).Addasmember(Victims.at(i)); // tOREMOVE;
+        /*]]]*/
         try{
             if (IsVictimInServer(Victims.at(i)) == true)
             {
                 if ((*iter).IsalreadyMember(Victims.at(i)) == true)
                 {
-                    if (SelfKick(owner, Victims.at(i)) == false) //Change owner By Server::ServerClient.at(fd) it After;
+                    if (SelfKick(owner, Victims.at(i)) == false) //Change owner By Server::ServerClient.at(fd).nickname it After;
                     {
                         // response = Server::ServerClient.at(__fd).nickname +"!~" + MYhost::GetHost() + " KICK " + channelName + Victims.at(i) + Server::ServerClient.at(__fd).nickname;
                         // BroadcastMessage(Server::ServerClient.at(__fd), channelName, iter, response + reason);
