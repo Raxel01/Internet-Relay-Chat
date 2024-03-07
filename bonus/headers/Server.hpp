@@ -6,7 +6,7 @@
 /*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 14:32:19 by mbachar          ###   ########.fr       */
+/*   Updated: 2024/03/07 13:05:02 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class Server
 		Server(std::string port, std::string password);
 		int			parseInput();
 		int			start();
-		void		addClient(int clientSocket);
+		void		addClient(int clientSocket, std::string client_ip);
 		void		processClientData(char *buffer, std::map<int, Client>::iterator &it);
 		std::map<int, Client>::iterator	findSocket(int clientSocket);
 		void		mySend(const char *msg, int clientSocket);

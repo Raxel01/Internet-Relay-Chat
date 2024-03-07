@@ -12,7 +12,7 @@ class Client
 {
 	public:
 		int			clientSocket;
-		std::string	ipAdress;
+		std::string	client_ip;
 		std::string	password;
 		std::string	username;
 		std::string	nickname;

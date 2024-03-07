@@ -2,8 +2,8 @@
 
 Client::Client()
 {
+	client_ip = "";
 	clientSocket = 0;
-	ipAdress = "";
 	username = "";
 	nickname = "";
 	isRegistred = false;

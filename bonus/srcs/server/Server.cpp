@@ -29,13 +29,13 @@ int	Server::parseInput()
 
 int	Server::start()
 {
-	struct sockaddr_in	address;
+	struct sockaddr_in	server_address;
 	int			opt		= 1;
-	bzero(&address, sizeof(sockaddr_in));
+	bzero(&server_address, sizeof(sockaddr_in));
 
-	address.sin_family		= AF_INET;
-	address.sin_addr.s_addr	= INADDR_ANY;
-	address.sin_port		= htons(std::atoi(_port.c_str()));
+	server_address.sin_family		= AF_INET;
+	server_address.sin_addr.s_addr	= INADDR_ANY;
+	server_address.sin_port			= htons(std::atoi(_port.c_str()));
 
 	int	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
@@ -44,7 +44,7 @@ int	Server::start()
 	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
 		return (error("socket was unable to reuse the ip address."), 1);
 
-	if (bind(serverSocket, (sockaddr *)&address, sizeof(address)) == -1)
+	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1)
 		return (error("socket was unable to bind to ip adress and port number."), 1);
 
 	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1)
@@ -56,11 +56,15 @@ int	Server::start()
 	std::cout << GREEN << " * Server started, listening on port " << PURPLE << _port << GREEN << " for any incoming connections." << RESET << std::endl;
 
 	// Polling and other stuff
-	std::vector<pollfd> sockets;
+	std::vector<pollfd>	sockets;
+	sockaddr_in			client_address;
+	socklen_t			client_address_len = sizeof(client_address);
+	char				client_ip[INET_ADDRSTRLEN];
+	int					clientSocket;
+	size_t				i = 0;
+
 	sockets.push_back((pollfd){.fd = serverSocket, .events = POLLIN, .revents = 0});
 	std::map<int, Client>::iterator	it;
-	int	clientSocket;
-	size_t	i = 0;
 	while (true) {
 		try {
 			if (poll(sockets.begin().base(), sockets.size(), -1) == -1)
@@ -69,19 +73,22 @@ int	Server::start()
 			while (i < sockets.size()) {
 				if (POLLIN & sockets[i].revents) {
 					if (sockets[i].fd == serverSocket) {
-						clientSocket = accept(serverSocket, NULL, 0);
+						bzero(&client_address, sizeof(sockaddr_in));
+						clientSocket = accept(serverSocket, (sockaddr *)&client_address, &client_address_len);
 						sockets.push_back((pollfd){.fd = clientSocket, .events = POLLIN, .revents = 0});
 						i = sockets.size() - 1;
-						std::cout << GREEN << " * Client " << PURPLE << sockets[i].fd << RESET << " connected successfuly." << std::endl;
-						addClient(sockets[i].fd);
+    					inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
+						std::string	ip_str(client_ip);
+						addClient(sockets[i].fd, ip_str);
 						it = findSocket(sockets[i].fd);
+						std::cout << GREEN << " * Client " << PURPLE << it->second.client_ip << RESET << " connected successfuly." << std::endl;
 					}
 					else {
 						char buffer[1024] = {0};
 						ssize_t	rcvlen = recv(sockets[i].fd, buffer, 1024, 0);
 						if (rcvlen <= 0) {
-							std::cout << RED << " * Client " << PURPLE << sockets[i].fd << RESET << " has disconnected." << std::endl;
 							it = findSocket(sockets[i].fd);
+							std::cout << RED << " * Client " << PURPLE << it->second.client_ip << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
 							for (it_ = sockets.begin(); it_ != sockets.end(); it_++) {
 								if (it_->fd == sockets[i].fd)
@@ -114,7 +121,7 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 	std::string	nickname;
 	std::string	username;
 
-	if (!std::strncmp(buffer, "PASS", 4)) {
+	if (!std::strncmp(buffer, "PASS ", 5) || !std::strncmp(buffer, "PASS\t", 5)) {
 		if (it->second.isRegistred) {
 			mySend(" * Error 462 : You are already registred.\n", it->first);
 			return ;
@@ -134,7 +141,7 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 			it->second.isRegistred = true;
 		}
 	}
-	else if (!std::strncmp(buffer, "NICK", 4)) {
+	else if (!std::strncmp(buffer, "NICK ", 5) || !std::strncmp(buffer, "NICK\t", 5)) {
 		if (!it->second.isRegistred) {
 			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
 			return ;
@@ -169,7 +176,7 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 		mySend(" * Success   : You have set yourself a nickname.\n", it->first);
 		mySend(" * Hint      : Now you can set yourself a username by using (USER <username> 0 * <realname>).\n", it->first);
 	}
-	else if (!std::strncmp(buffer, "USER", 4)) { // Some missing parsing here
+	else if (!std::strncmp(buffer, "USER ", 5) || !std::strncmp(buffer, "USER\t", 5)) { // Some missing parsing here
 		if (!it->second.isRegistred) {
 			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
 			return ;
@@ -224,6 +231,9 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 		mySend(" * TOPIC   - Changes or view the channel topic.\n", it->first);
 		mySend(" * JOIN    - Creates a channel if it doesn't exit or join an existing one.\n", it->first);
 		mySend(" * PRIVMSG - Sends a private message to a client or a channel.\n", it->first);
+		mySend(" * BOT     - Interacts with a silly bot :\n", it->first);
+		mySend("\t1. fact   : Tells you a random fact that you probably never knew.\n", it->first);
+		mySend("\t2. weather: Tells you about the weather in case you didn't check it yourself.\n", it->first);
 		mySend(" * MODE    - Changes the channel's mode :\n", it->first);
 		mySend("\t1. +/- i: Sets/removes Invite-only channel.\n", it->first);
 		mySend("\t2. +/- t: Sets/removes the restrictions of the TOPIC command to channel operators.\n", it->first);
@@ -236,6 +246,7 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 		for (std::map<int, Client>::iterator ite = ServerClients.begin(); ite != ServerClients.end(); ite++) {
 			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
 			std::cout << GREEN << " * Client Socket   = " << RESET << ite->first << std::endl;
+			std::cout << GREEN << " * Client IpAdress = " << RESET << ite->second.client_ip << std::endl;
 			std::cout << GREEN << " * Client NickName = " << RESET << ite->second.nickname << std::endl;
 			std::cout << GREEN << " * Client UserName = " << RESET << ite->second.username << std::endl;
 			if (ite->second.isRegistred == true)
@@ -266,10 +277,12 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 
 void	Server::mySend(const char *msg, int clientSocket) {send(clientSocket, msg, std::strlen(msg), 0);}
 
-void	Server::addClient(int clientSocket)
+void	Server::addClient(int clientSocket, std::string	client_ip)
 {
 	Client	client;
 	Server::ServerClients.insert(std::make_pair(clientSocket, client));
+	std::map<int, Client>::iterator it = findSocket(clientSocket);
+	it->second.client_ip = client_ip;
 }
 
 std::map<int, Client>::iterator	Server::findSocket(int clientSocket)
