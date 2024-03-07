@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 21:25:22 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/07 22:23:07 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,19 @@ void    ModeProcessor(size_t& OccurSpace, int __fd, std::string& CHANNEL, std::s
             response = NumericReplies(MYhost::GetHost(), "442", Server::ServerClients.at(__fd).nickname, CHANNEL, "You are not on this channel");
                 throw EX_NOTONCHANNEL();
         }
-        if (OccurSpace == 1)
+        //Stop Here 10:23
+        if (OccurSpace == 1)//Getthe channel mode when [MODE #channel] is seet
             (*RoomObj).ChannelMode(__fd);
-        else
-        {
+        else{
+            if ((*RoomObj).IsMediator(Server::ServerClients.at(__fd).nickname))
+            {
+                
+            }
+            else
+            {
+                response = NumericReplies(MYhost::GetHost(), "482", Server::ServerClients.at(__fd).nickname, CHANNEL, "You are not CHANNEL CHANOP");
+                    throw Ex_CHANOPRIVSNEEDED();
+            }
             std::cout << "Go To set add or remove mode"<< std::endl;
         }
         //Stoped Here/***** * *****/

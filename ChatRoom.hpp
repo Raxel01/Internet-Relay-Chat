@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 21:14:01 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/07 21:49:32 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ class ChatRoom
         void            Addasmember(std::string& newMember);
         void            AddasMediator(std::string& NewMediator);
         void            AddToInvited(std::string& NewInvited);
-        std::string     ChannelMode(int __fd);
+        void            ChannelMode(int __fd);
         void            BanThisUser(std::string User);
         void            PardonUser(std::string USER);//Remove FromBanList When invite
         std::string     getTOPIC();

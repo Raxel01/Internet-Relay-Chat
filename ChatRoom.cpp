@@ -6,11 +6,14 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 21:23:03 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/07 22:20:13 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ChatRoom.hpp"
+#include <string>
+#include <algorithm>
+
 
 std::vector<ChatRoom>   GlobalServerData::ServerChannels; // all serverchannel
 
@@ -248,18 +251,26 @@ void            ChatRoom::eraseFromInvList(std::string Invited)
     } 
 }
 
-std::string     ChatRoom::ChannelMode(int __fd){
+void     ChatRoom::ChannelMode(int __fd){
     std::string mode("+");
     std::string response;
+    std::string modeArgs;
     
-    if (HaveLimitUser == true)
+    if (HaveLimitUser == true){
+        modeArgs += std::to_string(_AllowedUsers) + " ";
         mode.push_back('l');
-    if (keyStatus == true)
+    }
+    if (keyStatus == true){
+        if (IsMediator(Server::ServerClients.at(__fd).nickname) == true)
+            modeArgs += _ChatKey + " ";
+        else
+            modeArgs += " *** ";
         mode.push_back('k');
+    }
     if (_Acces_isInviteOnly == true)
         mode.push_back('i');
     if (TopicRestriction == true)
         mode.push_back('t');
-    response = ":" + MYhost::GetHost() + " 324 " + Server::ServerClients.at(__fd).nickname + " " + _RoomName + " " + mode;
+    response = ":" + MYhost::GetHost() + " 324 " + Server::ServerClients.at(__fd).nickname + " " + _RoomName + " " + mode + " " + modeArgs + "\n";
     send (__fd, response.c_str(), response.length(), 0);
 }
