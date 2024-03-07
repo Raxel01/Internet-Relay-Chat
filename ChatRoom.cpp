@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 12:18:36 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/07 21:23:03 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,4 +246,20 @@ void            ChatRoom::eraseFromInvList(std::string Invited)
         }
         _InviteList.erase(iter);
     } 
+}
+
+std::string     ChatRoom::ChannelMode(int __fd){
+    std::string mode("+");
+    std::string response;
+    
+    if (HaveLimitUser == true)
+        mode.push_back('l');
+    if (keyStatus == true)
+        mode.push_back('k');
+    if (_Acces_isInviteOnly == true)
+        mode.push_back('i');
+    if (TopicRestriction == true)
+        mode.push_back('t');
+    response = ":" + MYhost::GetHost() + " 324 " + Server::ServerClients.at(__fd).nickname + " " + _RoomName + " " + mode;
+    send (__fd, response.c_str(), response.length(), 0);
 }

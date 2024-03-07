@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 12:25:38 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/07 21:25:22 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,15 @@
 #include "GlobalException.hpp"
 #include "KickRequest.hpp"
 
-void    ModeProcessor(std::string &clientMsg, int __fd, std::string& CHANNEL, std::string& MODE, std::string& ModeArgument){
+void    ModeProcessor(size_t& OccurSpace, int __fd, std::string& CHANNEL, std::string& ModeArgument, \
+        short requiredArgs, std::string& UnknowFlags, std::string& CleanMode, enum MODETYPE CMODETYPE){
         
     Roomiter    RoomObj;
     std::string response;
     
     RoomObj = FindUsingName( CHANNEL );
     try{
-         if (RoomObj == GlobalServerData::ServerChannels.end()){
+        if (RoomObj == GlobalServerData::ServerChannels.end()){
             response = NumericReplies(MYhost::GetHost(), "403", Server::ServerClients.at(__fd).nickname, CHANNEL, "No such channel");
                 throw Ex_NOSUCHCHANNEL();
         }
@@ -31,7 +32,13 @@ void    ModeProcessor(std::string &clientMsg, int __fd, std::string& CHANNEL, st
             response = NumericReplies(MYhost::GetHost(), "442", Server::ServerClients.at(__fd).nickname, CHANNEL, "You are not on this channel");
                 throw EX_NOTONCHANNEL();
         }
-        //Stoped Here
+        if (OccurSpace == 1)
+            (*RoomObj).ChannelMode(__fd);
+        else
+        {
+            std::cout << "Go To set add or remove mode"<< std::endl;
+        }
+        //Stoped Here/***** * *****/
         
     }
     catch (std::exception& e)
@@ -45,22 +52,34 @@ bool validFlags(char c){
     return (c == 'o' || c == 'l' || c == 'k' || c == 'i' || c == 't');
 }
 /*
-    @ : Extract Unknow flags in MODE string 
+    @ : Extract Unknow flags in MODE string
+    @:  Here is Le3jinna 
 */
 
-void      GetRequiredArgs(short& requiredArgs  , std::string& MODE, std::string& UnknowFlags)
+void      DataCleaner(short& requiredArgs, std::string& MODE, std::string& UnknowFlags, std::string& CleanMode, enum MODETYPE& CMODETYPE)
 {
     short i = -1;
     char  c ;
-    if (MODE[0] == '+' || MODE[0] == '-')
+    std::string Already;
+    
+    if (MODE[0] == '+' || MODE[0] == '-') // Get The modestring 
+    {
+        CMODETYPE = (MODE[0] == '+') ? ADD_MODE : REMOVE_MODE;
         i++;
+    }
     while (MODE[++i])
     {
         c = MODE[i];
-        if (c == 'k' || c == 'l' || c == 'o')
-            requiredArgs++;
+        if (c == 'k' || c == 'l' || c == 'o') {
+            if (Already.find(c) == std::string::npos){
+                Already.push_back(c);
+                requiredArgs++;
+            }
+        }
         if (validFlags(c) == false && UnknowFlags.find(c) == std::string::npos)
             UnknowFlags.push_back(c);
+        if (validFlags(c) == true && CleanMode.find(c) == std::string::npos)
+            CleanMode.push_back(c);
     }
 }
 
@@ -75,17 +94,18 @@ void    ModeMessage(std::string& clientMsg, int __fd)
     }
     else
     {
+        /* Tooon of Variables **************/
         std::stringstream stream(clientMsg);
         std::string       component;
         std::string       CHANNEL;
         std::string       MODE;
         std::string       ModeArgument;
-        short            requiredArgs (0);
-        std::string      UnknowFlags;
-        
-        
-        short index;
-        index = 0;
+        short             requiredArgs (0);
+        std::string       UnknowFlags;
+        std::string       CleanMode;
+        enum              MODETYPE CMODETYPE = ERROR_MODE;
+        short index = 0;
+        /***************************************************/
         
         while (std::getline(stream, component, ' '))
         {
@@ -108,16 +128,12 @@ void    ModeMessage(std::string& clientMsg, int __fd)
             }
         index++;
         }
-        GetRequiredArgs(requiredArgs, MODE, UnknowFlags);
+        DataCleaner(requiredArgs, MODE, \
+        UnknowFlags, CleanMode, CMODETYPE);
         
-        // ModeProcessor(clientMsg, __fd, CHANNEL, MODE, ModeArgument);
-        std::cout << "****************************************"<< std::endl;
-        std::cout << "* CHANNEL      : |" << CHANNEL      <<"*" << std::endl;
-        std::cout << "* MODE         : |" << MODE         <<"*" << std::endl;
-        std::cout << "* MODE ARGS    : |" << ModeArgument <<"*" << std::endl;
-        std::cout << "* Required ARGS: |" << requiredArgs <<"*" << std::endl;
-        std::cout << "* unknowFlags  : |" << UnknowFlags  <<"*" <<std::endl;
-        std::cout << "****************************************"<< std::endl;
+        /*Hooolyshiiiiiiit*/
+        
+        ModeProcessor(OccurSpace, __fd, CHANNEL, ModeArgument,\
+               requiredArgs, UnknowFlags, CleanMode, CMODETYPE);
     }
-    
 }
