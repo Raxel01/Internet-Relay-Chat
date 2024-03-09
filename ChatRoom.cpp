@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 23:20:50 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/09 23:26:16 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -302,7 +302,7 @@ void     ChatRoom::ChannelMode(int __fd){
 }
 
 void           ChatRoom::UpgradeToChanoP(std::string USER)
-{`
+{
     _Members.erase( IsRegularUser(USER)); // Already checked that the user is not a channop and exist in RegularUserList < = > List
     AddasMediator(USER);
 }
