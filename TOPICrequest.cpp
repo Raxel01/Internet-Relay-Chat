@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 04:35:20 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 16:52:10 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/09 21:49:10 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std
                 }
                 else//Try to set the [setTOPIC to this CHANNEL]
                 {
-                    if ((*RoomObj).TopicRestriction == true && (*RoomObj).IsMediator(Server::ServerClients.at(__fd).nickname) || (*RoomObj).TopicRestriction == false) // Change by user name
+                    if (((*RoomObj).TopicRestriction == true && (*RoomObj).IsMediator(Server::ServerClients.at(__fd).nickname) ) || (*RoomObj).TopicRestriction == false) // Change by user name
                     {
                         (*RoomObj).SetTOPIC(NEWTOPIC);
                         response = ":" + Server::ServerClients.at(__fd).nickname + "!~" + Server::ServerClients.at(__fd).username + " TOPIC " + (*RoomObj)._RoomName + " " +(*RoomObj)._ChatTopic + "\n";

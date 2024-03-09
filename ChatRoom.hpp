@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 21:49:32 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/09 21:33:23 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <vector>
 #include  "Server.hpp" // May need to change the path
 
-#define LimitUsers 900
+#define LIMITUSERS 900
 // class Clients; need it to Store 
 typedef std::deque<std::string> DEQUE ;
 
@@ -30,19 +30,21 @@ class ChatRoom
 {
     public :
         // clock_t               CreationTime      ;
-        std::string           _RoomName         ;
-        std::string           _ChatTopic        ;
+        std::string          _RoomName         ;
+        std::string          _ChatTopic        ;
         DEQUE                _Members           ;
         DEQUE                _BannedUsers       ;
         DEQUE                _Mediators         ;
         DEQUE                _InviteList        ;
-        std::string           _ChatKey          ;
+        std::string          _ChatKey          ;
         size_t               _AllowedUsers      ; //Limit Setted;
         bool                 _Acces_isInviteOnly;
         bool                 keyStatus          ; //+k if the key is setted or not 
         bool                 HaveLimitUser      ; //+l
         bool                 TopicRestriction   ;   //+t [+t] seTtoknow Who will seet the Topic
         bool                 TopicStatus        ;
+        std::string          ModeReply          ;
+        std::string          ModeArgs           ;
         // clock_t              Destruction        ;
     public :
         ChatRoom();
@@ -51,10 +53,12 @@ class ChatRoom
         void            Addasmember(std::string& newMember);
         void            AddasMediator(std::string& NewMediator);
         void            AddToInvited(std::string& NewInvited);
+        void            UpgradeToChanoP(std::string USER);
         void            ChannelMode(int __fd);
         void            BanThisUser(std::string User);
         void            PardonUser(std::string USER);//Remove FromBanList When invite
         std::string     getTOPIC();
+        void            ToRegularUser (std::string USER);
         void            SetTOPIC(std::string Topic);
         void            eraseFromInvList(std::string Invited);
         // void            removeMember(std::string& tobeRemoved);

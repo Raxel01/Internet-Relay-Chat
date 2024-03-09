@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 06:38:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 16:27:45 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/09 21:49:43 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void    PassworMatcher(int __fd, std::vector<ChatRoom>::iterator& iter, std::str
                             std::string &ChannelName, std::string& Key, enum KeyType KeyFlag)
 {
     if ((*iter).keyStatus == true){
-        if ((*iter)._ChatKey.compare(Key) == 0 && KeyFlag == KEY_PROVIDED || (*iter).IsInviteList(user) == true){
+        if (((*iter)._ChatKey.compare(Key) == 0 && KeyFlag == KEY_PROVIDED ) || (*iter).IsInviteList(user) == true){
             std::cout << "User added bECAUSE TH KEY match or he is invited"<< std::endl;
                 (*iter).Addasmember(user);
                         (*iter).eraseFromInvList(user);

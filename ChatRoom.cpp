@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/07 22:20:13 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/09 23:20:50 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,11 @@ int GlobalServerData::LastChannelUser = -1;
 ChatRoom::ChatRoom(std::string& Creator, std::string& SetRoomName): _RoomName(SetRoomName), _ChatKey(""){
     // _Members.push_back("@" + Creator);
     _Mediators.push_back("@" + Creator);
-    _AllowedUsers = LimitUsers;
-    keyStatus = false;
+    _AllowedUsers = LIMITUSERS;
     TopicStatus = false;
+    
+    HaveLimitUser = false;//issue Here
+    keyStatus = false;
     _Acces_isInviteOnly = false;
     TopicRestriction = true; // Only Admin can set the  Channel Topic
 }
@@ -57,7 +59,7 @@ ChatRoom::~ChatRoom(){
     }
 }
 void            ChatRoom::getelems(){
-    std::cout << "_____________________________________________________"<< std::endl;
+    std::cout << "*************************************************************"<< std::endl;
     DEQUE::iterator it = _Mediators.begin();
     
     while (it != _Mediators.end()){
@@ -83,10 +85,31 @@ void            ChatRoom::getelems(){
     }
     std::cout << "^^^^^^^^^^^^^Banned Users^^^^^^^^^^^^^^"<< std::endl;
     std::cout << "RoomNAME => " << _RoomName << std::endl;
-    std::cout << "Keysstatus : " << keyStatus << std::endl;  
+    std::cout << "Keysstatus : ";
+    if (keyStatus == true)
+        std::cout << " TRUE kEY :|" << _ChatKey << "|"<< std::endl;
+    else
+        std::cout << "False"<< std::endl;
+        
     std::cout << "Users Joined Channel " << _Mediators.size() + _Members.size() << std::endl;
-    std::cout << "_____________________________________________________________"<< std::endl;
+    std::cout << "Acces with Invitation : ";
+    if (_Acces_isInviteOnly == true)
+        std::cout << "Yes inviteOnly "<< std::endl;
+    else
+        std::cout << "NO no invitation "<<std::endl;
+    std::cout << "tOPICRESTRICTION : ";
+        if (TopicRestriction == true)
+            std::cout << "true  : Only admin can change Topic"<< std::endl;
+        else
+            std::cout << "False : All Users can Change topic"<< std::endl;
+    std::cout << "LiMITUSERS :";
+    if (HaveLimitUser == true)
+        std::cout << "True limit Is " << _AllowedUsers << std::endl;
+    else
+        std::cout << "Default limit " << LIMITUSERS << std::endl;
+    std::cout << "*************************************************************"<< std::endl;
 }
+
 
 std::string     ChatRoom::MembersList(){
     
@@ -226,8 +249,8 @@ void            ChatRoom::AddToInvited(std::string& NewInvited)
 
 void            ChatRoom::PardonUser(std::string USER){
 
-    DEQUE::iterator  OPFINDER = _Mediators.begin();
-    while (OPFINDER != _Mediators.end())
+    DEQUE::iterator  OPFINDER = _BannedUsers.begin(); //I changed Here _Mediator By _BannedUser
+    while (OPFINDER != _BannedUsers.end())
     {
         if ((*OPFINDER) == USER)
             break;
@@ -252,6 +275,7 @@ void            ChatRoom::eraseFromInvList(std::string Invited)
 }
 
 void     ChatRoom::ChannelMode(int __fd){
+    
     std::string mode("+");
     std::string response;
     std::string modeArgs;
@@ -271,6 +295,29 @@ void     ChatRoom::ChannelMode(int __fd){
         mode.push_back('i');
     if (TopicRestriction == true)
         mode.push_back('t');
+    if (mode.compare("+") == 0)
+        mode = ":No Active Mode now";
     response = ":" + MYhost::GetHost() + " 324 " + Server::ServerClients.at(__fd).nickname + " " + _RoomName + " " + mode + " " + modeArgs + "\n";
     send (__fd, response.c_str(), response.length(), 0);
+}
+
+void           ChatRoom::UpgradeToChanoP(std::string USER)
+{`
+    _Members.erase( IsRegularUser(USER)); // Already checked that the user is not a channop and exist in RegularUserList < = > List
+    AddasMediator(USER);
+}
+
+//Make an Admin a normal User
+void            ChatRoom::ToRegularUser (std::string USER){
+    
+    DEQUE::iterator Iter = _Mediators.begin();
+    while (Iter != _Mediators.end()){
+        if (*Iter == USER)
+            break;
+        Iter++;
+    }
+    if (Iter != _Mediators.end()){
+        _Mediators.erase(Iter);
+        Addasmember(USER);
+    }
 }
