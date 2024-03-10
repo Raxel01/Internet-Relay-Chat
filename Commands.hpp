@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/09 23:35:47 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:29:38 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:57:27 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,5 +126,12 @@ void    ModeMessage(std::string& clientMsg, int __fd);
     @***************************************************************************************************]
 */
 
+/*
+    @= PRIVVMESSAGE     *****************]]]]]]]]]]]]]
+*/
+
+void        PRIVMessage(std::string& clientMsg, int __fd);
+
+/*****************************************************/
 
 std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NICKNAME, std::string CMD, std::string RAISON);

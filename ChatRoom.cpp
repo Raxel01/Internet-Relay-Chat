@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:05:02 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 07:23:56 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,7 +275,7 @@ void            ChatRoom::eraseFromInvList(std::string Invited)
 
 void     ChatRoom::ChannelMode(int __fd){
     
-    std::string mode("+");
+    std::string mode("+n");
     std::string response;
     std::string modeArgs;
     
@@ -294,8 +294,6 @@ void     ChatRoom::ChannelMode(int __fd){
         mode.push_back('i');
     if (TopicRestriction == true)
         mode.push_back('t');
-    if (mode.compare("+") == 0)
-        mode = ":No Active Mode now";
     response = ":" + MYhost::GetHost() + " 324 " + Server::ServerClients.at(__fd).nickname + " " + _RoomName + " " + mode + " " + modeArgs + "\n";
     send (__fd, response.c_str(), response.length(), 0);
 }

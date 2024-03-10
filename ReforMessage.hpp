@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:15:00 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 11:44:55 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 03:40:36 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #define    IGNORE     "IGNORE"
 #define    CONTINUE   "CONTINUE"
 #define    QUIT       "QUIT"
+#define    PRIVMSG    "PRIVMSG"
 
 
 class ReforMessage

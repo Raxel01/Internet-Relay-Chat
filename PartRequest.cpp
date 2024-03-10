@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:00:22 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 03:49:42 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,10 @@ void    PartProcessor(DEQUE& Channels, int __fd, std::string& Reason)
                 if ((*Finder).IsMediator(Server::ServerClients.at(__fd).nickname) == true){
                     BroadcastMessage("", "" , Finder, response);
                     (*Finder).PartMediator(Server::ServerClients.at(__fd).nickname); //  owner to Change
-                    std::cout << " Mediator "<< std::endl; // toRemove
                 }
                 else if ((*Finder).IsRegularUser(Server::ServerClients.at(__fd).nickname) != (*Finder)._Members.end()){//User is a member
                         BroadcastMessage("", "" , Finder, response);
                         (*Finder)._Members.erase((*Finder).IsRegularUser(Server::ServerClients.at(__fd).nickname));
-                        std::cout << " Not Mediator "<< std::endl; // to remove
                 }
                 /* I think I'll Broadcast Here */
                 if ((*Finder).Roomsize() == 0 || (*Finder)._Mediators.size() == 0){// if no admin or no member the Channel Will be Destroyed
@@ -85,7 +83,7 @@ void    PartMessage(std::string& clientMsg, int __fd)
     
     if (OccurSpace == 0 || clientMsg.compare("PART :") == 0){
         std::string response = ":" + MYhost::GetHost() + " 461 " + Server::ServerClients.at(__fd).nickname + " PART " + ": NO ENOUGH PARAMETERS" + "\n" +
-            NumericReplies(MYhost::GetHost(), "999", Server::ServerClients.at(__fd).nickname, "PART", ":<channel,channel1,...> [<reason>]");
+            NumericReplies(MYhost::GetHost(), "999", Server::ServerClients.at(__fd).nickname, "PART", "<channel,channel1,...> [<reason>]");
             send(__fd, response.c_str(), response.length(), 0);
     }
     else
@@ -114,8 +112,8 @@ void    PartMessage(std::string& clientMsg, int __fd)
         index++;
         }
         if (Reason.empty())
-            Reason = "Just Leaving...";
-        std::deque<std::string> Channels;
+            Reason = " Just Leaving...";
+        DEQUE Channels;
         FullChannelList(channelList, Channels);
         PartProcessor(Channels, __fd, Reason);
     }
