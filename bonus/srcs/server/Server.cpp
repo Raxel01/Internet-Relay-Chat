@@ -16,8 +16,8 @@ int	Server::parseInput()
 	for (size_t i = 0; i < _port.length(); i++)
 		if (!std::isdigit(_port[i]))
 			return (error("port should contain only digits."), 1);
-	if (std::atoi(_port.c_str()) < 1024 || std::atoi(_port.c_str()) > 49151)
-		return (error("port should be between 1024 and 49151 for server applications."), 1);
+	if (std::atoi(_port.c_str()) < 1024 || std::atoi(_port.c_str()) > 65565)
+		return (error("port should be between 1024 and 65565."), 1);
 
 	// Parsing Password
 	for (size_t i = 0; i < _password.length(); i++)
@@ -59,7 +59,7 @@ int	Server::start()
 	std::vector<pollfd>	sockets;
 	sockaddr_in			client_address;
 	socklen_t			client_address_len = sizeof(client_address);
-	char				client_ip[INET_ADDRSTRLEN];
+	char				*client_ip;
 	int					clientSocket;
 	size_t				i = 0;
 
@@ -67,7 +67,7 @@ int	Server::start()
 	std::map<int, Client>::iterator	it;
 	while (true) {
 		try {
-			if (poll(sockets.begin().base(), sockets.size(), -1) == -1)
+			if (poll(sockets.begin().base(), sockets.size(), 0) == -1)
 				exit (1);
 			i = 0;
 			while (i < sockets.size()) {
@@ -77,7 +77,7 @@ int	Server::start()
 						clientSocket = accept(serverSocket, (sockaddr *)&client_address, &client_address_len);
 						sockets.push_back((pollfd){.fd = clientSocket, .events = POLLIN, .revents = 0});
 						i = sockets.size() - 1;
-    					inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
+						client_ip = inet_ntoa(client_address.sin_addr);
 						std::string	ip_str(client_ip);
 						addClient(sockets[i].fd, ip_str);
 						it = findSocket(sockets[i].fd);
@@ -101,7 +101,27 @@ int	Server::start()
 						}
 						else {
 							it = findSocket(sockets[i].fd);
-							processClientData(buffer, it);
+							int	flag = 0;
+							for (size_t i = 0; i < std::strlen(buffer); i++) {
+								if (buffer[i] == '\n') {
+									flag++;
+									break;
+								}
+							}
+							it->second.buffer_str.append(buffer);
+							if (flag == 1) {
+								processClientData(it->second.buffer_str, it);
+								it->second.buffer_str.clear();
+							}
+							else {
+								if (it->second.buffer_str != "") {
+									it->second.buffer_str.erase(it->second.buffer_str.length());
+								}
+								if (it->second.buffer_str.find('\n') != std::string::npos) {
+									processClientData(it->second.buffer_str, it);
+									it->second.buffer_str.clear();
+								}
+							}
 						}
 					}
 				}
@@ -115,84 +135,93 @@ int	Server::start()
     return 0;
 }
 
-void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it)
+void	Server::processClientData(std::string buffer, std::map<int, Client>::iterator &it)
 {
 	std::string	password;
 	std::string	nickname;
 	std::string	username;
+	std::string	format;
 
-	if (!std::strncmp(buffer, "PASS ", 5) || !std::strncmp(buffer, "PASS\t", 5)) {
+	if (!std::strncmp(buffer.c_str(), "PASS ", 5) || !std::strncmp(buffer.c_str(), "PASS\t", 5)) {
 		if (it->second.isRegistred) {
-			mySend(" * Error 462 : You are already registred.\n", it->first);
+			format = ":" + it->second.client_ip + " 462 " + " " + std::to_string(it->first) + " :You are already registred\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer) == 4 || std::strlen(buffer) == 5) {
-			mySend(" * Error 461 : Missing password, correct syntax is (PASS server_password).\n", it->first);
+		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
+			format = ":" + it->second.client_ip + " 461 " + " " + std::to_string(it->first) + " :Missing password\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		password = extractKey(buffer);
+		password = extractKey(buffer.c_str());
 		if (password != _password) {
-			mySend(" * Error 464 : Incorrect password.\n", it->first);
-			close(it->first);
+			format = ":" + it->second.client_ip + " 462 " + " " + std::to_string(it->first) + " :Incorrect password\r\t\n";
+			mySend(format.c_str(), it->first);
+			return ;
 		}
 		if (password == _password) {
-			mySend(" * Success   : You have entered the correct password.\n", it->first);
-			mySend(" * Hint      : Now you can set yourself a nickname by using (NICK your_nickname).\n", it->first);
 			it->second.isRegistred = true;
 		}
 	}
-	else if (!std::strncmp(buffer, "NICK ", 5) || !std::strncmp(buffer, "NICK\t", 5)) {
+	else if (!std::strncmp(buffer.c_str(), "NICK ", 5) || !std::strncmp(buffer.c_str(), "NICK\t", 5)) {
 		if (!it->second.isRegistred) {
-			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
+			format = ":" + it->second.client_ip + " 451 " + " " + std::to_string(it->first) + " :You need to enter the server's password first\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		if (it->second.isnickname) {
-			mySend(" * Error 462 : You already have a nickname.\n", it->first);
+			format = ":" + it->second.client_ip + " 462 " + " " + std::to_string(it->first) + " :You already have a nickname\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer) == 4 || std::strlen(buffer) == 5) {
-			mySend(" * Error 431 : Missing nickname, correct syntax is (NICK your_nickname).\n", it->first);
+		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
+			format = ":" + it->second.client_ip + " 431 " + " " + std::to_string(it->first) + " :Missing nickname\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		nickname = extractKey(buffer);
-		if (nickname[0] == '&' || nickname[0] == '#' || nickname[0] == ':') {
-			mySend(" * Error 432 : nickname musn't contain '#' or '&' or ':' as trailing characters.\n", it->first);
+		nickname = extractKey(buffer.c_str());
+		if (nickname[0] == '&' || nickname[0] == '#' || nickname[0] == ':' || nickname[0] == '@' || std::isdigit(nickname[0])) {
+			format = ":" + it->second.client_ip + " 432 " + " " + std::to_string(it->first) + " :Nickname musn't contain '#' or '&' or ':' as trailing characters\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		for (size_t i = 0; i < nickname.size(); i++) {
 			if (nickname[i] == ' ' || nickname[i] == '\t') {
-				mySend(" * Error 432 : nickname musn't contain whitespaces.\n", it->first);
+				format = ":" + it->second.client_ip + " 432 " + " " + std::to_string(it->first) + " :Nickname musn't contain whitespaces\r\t\n";
+				mySend(format.c_str(), it->first);
 				return ;
 			}
 		}
 		for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 			if (nickname == it_->second.nickname) {
-				mySend(" * Error 433 : Someone in the server is already using that nickname.\n", it->first);
+				format = ":" + it->second.client_ip + " 433 " + " " + std::to_string(it->first) + " :Someone in the server is already using that nickname\r\t\n";
+				mySend(format.c_str(), it->first);
 				return ;
 			}
 		}
 		it->second.nickname = nickname;
 		it->second.isnickname = true;
-		mySend(" * Success   : You have set yourself a nickname.\n", it->first);
-		mySend(" * Hint      : Now you can set yourself a username by using (USER <username> 0 * <realname>).\n", it->first);
 	}
-	else if (!std::strncmp(buffer, "USER ", 5) || !std::strncmp(buffer, "USER\t", 5)) { // Some missing parsing here
+	else if (!std::strncmp(buffer.c_str(), "USER ", 5) || !std::strncmp(buffer.c_str(), "USER\t", 5)) { // Some missing parsing here
 		if (!it->second.isRegistred) {
-			mySend(" * Error 911 : You need to enter the server's password first using (PASS server_password).\n", it->first);
+			format = ":" + it->second.client_ip + " 451 " + " " + std::to_string(it->first) + " :You need to enter the server's password first\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		if (!it->second.isnickname) {
-			mySend(" * Error 912 : You need to set yourself a nickname first using (NICK your_nickname).\n", it->first);
+			format = ":" + it->second.client_ip + " 451 " + " " + std::to_string(it->first) + " :You need to set yourself a nickname first\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		if (it->second.isusername) {
-			mySend(" * Error 462 : You already have a username.\n", it->first);
+			format = ":" + it->second.client_ip + " 462 " + " " + std::to_string(it->first) + " :You already have a username\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		int count_spaces = 0;
 		size_t i = 0;
-		for (i = 0; i < std::strlen(buffer); i++) {
-			if (buffer[i] == ' ')
+		for (i = 0; i < std::strlen(buffer.c_str()); i++) {
+			if (buffer.c_str()[i] == ' ')
 				count_spaces++;
 			if (count_spaces == 4)
 				break;
@@ -200,49 +229,69 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 		size_t j = 0;
 		i++;
 		if (count_spaces == 4) {
-			while (buffer[i]) {
+			while (buffer.c_str()[i]) {
 				username.resize(j + 1);
-				username[j++] = buffer[i++];
+				username[j++] = buffer.c_str()[i++];
 			}
 			for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 				if (username == it_->second.username) {
-					mySend(" * Error 433 : Someone in the server is already using that username.\n", it->first);
+					format = ":" + it->second.client_ip + " 433 " + " " + std::to_string(it->first) + " :Someone in the server is already using that username\r\t\n";
+					mySend(format.c_str(), it->first);
 					return ;
 				}
 			}
 			username.resize(j - 1);
 			it->second.username = username;
-			it->second.isusername = true;
-			mySend(" * Success   : You have set yourself a username.\n", it->first);
-			mySend(" * Hint      : For more commands, use (HELP).\n", it->first);
+			it->second.isusername = true; // Welcome message
+			format = ":" + it->second.client_ip + " 001 " + " " + std::to_string(it->first) + " :Welcome to FT_IRC server. You have successfuly registred to the server.\r\t\n";
+			mySend(format.c_str(), it->first);
+			format = ":" + it->second.client_ip + " 002 " + " " + std::to_string(it->first) + " :Your host is " + it->second.client_ip + " .\r\t\n";
+			mySend(format.c_str(), it->first);
+			format = ":" + it->second.client_ip + " 003 " + " " + std::to_string(it->first) + " :This server was created on Feb 15 2024.\r\t\n";
+			mySend(format.c_str(), it->first);
+			format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :use (HELP) for more commands, and enjoy your stay :D.\r\t\n";
+			mySend(format.c_str(), it->first);
 		}
 		else {
-			mySend(" * Error 913 : Missing arguments, syntax should be as follow (USER <username> 0 * <realname>).\n", it->first);
+			format = ":" + it->second.client_ip + " 913 " + " " + std::to_string(it->first) + " :Missing arguments\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 	}
-	else if (!std::strcmp(buffer, "HELP\n")) {
+	else if (!std::strncmp(buffer.c_str(), "HELP", 4)) {
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
-			mySend(" * Error 913 : You need to be authenticated before using this command.\n", it->first);
+			format = ":" + it->second.client_ip + " 461 " + " " + std::to_string(it->first) + " :You need to be authenticated before using this command\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		mySend(" * KICK    - Ejects a client from the channel.\n", it->first);
-		mySend(" * INVITE  - Invites a client to a channel.\n", it->first);
-		mySend(" * TOPIC   - Changes or view the channel topic.\n", it->first);
-		mySend(" * JOIN    - Creates a channel if it doesn't exit or join an existing one.\n", it->first);
-		mySend(" * PRIVMSG - Sends a private message to a client or a channel.\n", it->first);
-		mySend(" * BOT     - Interacts with a silly bot :\n", it->first);
-		mySend("\t1. fact   : Tells you a random fact that you probably never knew.\n", it->first);
-		mySend("\t2. weather: Tells you about the weather in case you didn't check it yourself.\n", it->first);
-		mySend(" * MODE    - Changes the channel's mode :\n", it->first);
-		mySend("\t1. +/- i: Sets/removes Invite-only channel.\n", it->first);
-		mySend("\t2. +/- t: Sets/removes the restrictions of the TOPIC command to channel operators.\n", it->first);
-		mySend("\t3. +/- k: Sets/removes the channel key (password).\n", it->first);
-		mySend("\t4. +/- k: Gives/takes channel operator privilege.\n", it->first);
-		mySend("\t5. +/- o: Gives/takes channel operator privilege.\n", it->first);
-		mySend("\t6. +/- l: Sets/removes the user limit to channel.\n", it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* KICK    - Ejects a client from the channel.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* INVITE  - Invites a client to a channel.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* TOPIC   - Changes or view the channel topic.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* JOIN    - Creates a channel if it doesn't exit or join an existing one.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* PRIVMSG - Sends a private message to a client or a channel.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* BOT     - Interacts with a silly bot.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :* MODE    - Changes the channel's mode :\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t1. +/- i: Sets/removes Invite-only channel.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t2. +/- t: Sets/removes the restrictions of the TOPIC command to channel operators.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t3. +/- k: Sets/removes the channel key (password).\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t4. +/- k: Gives/takes channel operator privilege.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t5. +/- o: Gives/takes channel operator privilege.\r\t\n";
+		mySend(format.c_str(), it->first);
+		format = ":" + it->second.client_ip + " 005 " + " " + std::to_string(it->first) + " :\t6. +/- l: Sets/removes the user limit to channel.\r\t\n";
+		mySend(format.c_str(), it->first);
 	}
-	else if (!std::strcmp(buffer, "PRINT\n")) {
+	else if (!std::strcmp(buffer.c_str(), "PRINT\n")) {
 		for (std::map<int, Client>::iterator ite = ServerClients.begin(); ite != ServerClients.end(); ite++) {
 			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
 			std::cout << GREEN << " * Client Socket   = " << RESET << ite->first << std::endl;
@@ -256,30 +305,33 @@ void	Server::processClientData(char *buffer, std::map<int, Client>::iterator &it
 			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
 		}
 	}
-	else if (!std::strncmp(buffer, "BOT ", 4) || !std::strncmp(buffer, "BOT\t", 4)) {
+	else if (!std::strncmp(buffer.c_str(), "BOT ", 4) || !std::strncmp(buffer.c_str(), "BOT\t", 4)) {
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
-			mySend(" * Error 913 : You need to be authenticated before using this command.\n", it->first);
+			format = ":" + it->second.client_ip + " 461 " + " " + std::to_string(it->first) + " :You need to be authenticated before using this command\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
-		Bot	emmet(it->first, buffer);
+		Bot	emmet(it->first, buffer.c_str(), it->second.client_ip);
 	}
 	else {
 		// You can put your functions here
 		// if you want to send a message to a client use : mySend("Your Message", it->first)
 		// Notice : dont change the second parameter of mySend() ==> it->first
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
-			mySend(" * Error 461 : You need to be authenticated before using this command.\n", it->first);
+			format = ":" + it->second.client_ip + " 461 " + " " + std::to_string(it->first) + " :You need to be authenticated before using this command\r\t\n";
+			mySend(format.c_str(), it->first);
 			return ;
 		}
 		mySend(" * Success   : Canis Lupus part here.\n", it->first);
 	}
 }
 
-void	Server::mySend(const char *msg, int clientSocket) {send(clientSocket, msg, std::strlen(msg), 0);}
+void	Server::mySend(const char *msg, int clientSocket) { send(clientSocket, msg, std::strlen(msg), 0); }
 
 void	Server::addClient(int clientSocket, std::string	client_ip)
 {
 	Client	client;
+
 	Server::ServerClients.insert(std::make_pair(clientSocket, client));
 	std::map<int, Client>::iterator it = findSocket(clientSocket);
 	it->second.client_ip = client_ip;

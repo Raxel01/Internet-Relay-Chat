@@ -3,6 +3,7 @@
 Client::Client()
 {
 	client_ip = "";
+	buffer_str = "";
 	clientSocket = 0;
 	username = "";
 	nickname = "";

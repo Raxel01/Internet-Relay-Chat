@@ -6,9 +6,10 @@
 class Bot
 {
 	public:
-		int		clientSocket;
-		char	*buffer;
-		Bot(int clientSocket, char *buffer);
+		int			clientSocket;
+		std::string	buffer;
+		std::string	clientIP;
+		Bot(int clientSocket, std::string buffer, std::string	clientIP);
 		void	parseBuffer();
 		void	randomFactsGenerator();
 		void	mySend(const char *msg);

@@ -13,6 +13,7 @@ class Client
 	public:
 		int			clientSocket;
 		std::string	client_ip;
+		std::string	buffer_str;
 		std::string	password;
 		std::string	username;
 		std::string	nickname;
