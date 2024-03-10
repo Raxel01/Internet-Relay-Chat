@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 21:33:23 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:05:16 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # include <iostream>
 # include <sstream>
 # include <deque>
+#include <string>
+#include <algorithm>
 # include <map>
 # include <ctime>
 # include <unistd.h>

@@ -6,19 +6,12 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 17:33:57 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:07:10 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include   "ReforMessage.hpp"
-# include   "JoinRequest.hpp"
-# include   "ChatRoom.hpp"
-# include   "GlobalException.hpp"
-# include   "KickRequest.hpp"
-# include   "PartRequest.hpp"
-# include   "TOPICrequest.hpp"
-# include   "InviteRequest.hpp"
-# include   "ModeRequest.hpp"
+# include   "Commands.hpp" 
 
 std::string    NumericReplies(std::string Prefix, std::string CODEREPLY, std::string NICKNAME, std::string CMD, std::string RAISON)
 {

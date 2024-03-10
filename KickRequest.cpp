@@ -6,16 +6,11 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:41 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 10:19:02 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:58:21 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "KickRequest.hpp"
-#include "GlobalException.hpp"
-#include "MessageRecognizer.hpp"
-#include "JoinRequest.hpp"
-
-
+#include "Commands.hpp"
 
 void     ExtractVictims(std::string& userList, std::vector<std::string>& Victims)
 {

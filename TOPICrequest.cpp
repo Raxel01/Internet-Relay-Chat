@@ -6,21 +6,18 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 04:35:20 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 21:49:10 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:27:23 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "TOPICrequest.hpp"
-#include "JoinRequest.hpp"
-#include "MessageRecognizer.hpp"
-#include "GlobalException.hpp"
-#include "ChatRoom.hpp"
+#include "Commands.hpp"
 
 // Pay Attention You should Change a lot of things in the Code
 void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std::string& clientMsg, int __fd, std::string& NEWTOPIC)
 {
     Roomiter    RoomObj;
     std::string response;
+    static_cast<void> (clientMsg);
     
     RoomObj = FindUsingName(channelName);
     try

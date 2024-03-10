@@ -6,15 +6,11 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 23:08:18 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:02:40 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ModeRequest.hpp"
-#include "JoinRequest.hpp"
-#include "MessageRecognizer.hpp"
-#include "GlobalException.hpp"
-#include "KickRequest.hpp"
+#include "Commands.hpp"
 
 void    TypeD(char mode, Roomiter& RoomObj, enum MODETYPE CMODETYPE)
 {

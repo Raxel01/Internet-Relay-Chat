@@ -6,16 +6,11 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 17:28:13 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:00:22 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "PartRequest.hpp"
-#include "JoinRequest.hpp"
-#include "MessageRecognizer.hpp"
-#include "GlobalException.hpp"
-#include "ChatRoom.hpp"
-
+#include "Commands.hpp"
 
 void    FullChannelList(std::string& channelList, DEQUE& channelVector)
 {

@@ -6,13 +6,12 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 23:26:16 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/10 02:05:02 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ChatRoom.hpp"
-#include <string>
-#include <algorithm>
+
 
 
 std::vector<ChatRoom>   GlobalServerData::ServerChannels; // all serverchannel
