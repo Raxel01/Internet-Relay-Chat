@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 06:38:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:20:01 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 05:43:04 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void    JoinWithKey(int __fd, std::string &user, std::string &ChannelName, std::
     if ((*iter).IsalreadyMember(user) == false){ // if user is current Member 
         if ((*iter).IsBanned(user) == false){ //ban or not 
             if ((*iter)._Mediators.size() + (*iter)._Members.size() < (*iter)._AllowedUsers){//channel is Full or not 
-                if ((*iter)._Acces_isInviteOnly == true){    // channel +i avtived
+                if ((*iter)._Acces_isInviteOnly == true){    // channel +i actived
                     if ((*iter).IsInviteList(user) == true){ // channel is invite only and User is invited also
                             (*iter).Addasmember(user); // Don't Forget to erase the user from the invite List
                         (*iter).eraseFromInvList(user);                        
@@ -195,8 +195,10 @@ BroadcastMessage(user, (*iter)._RoomName, iter, response); //Broadcast  a new us
 //Issur in first Message of Join
 void    JoinStart(int __fd, std::string& clientMsg, Myvector& Channels, Myvector& keys)
 {
-        int i = -1;
-        while (++i < static_cast<int>(Channels.size())){
+    int i = -1;
+    static_cast<void> (clientMsg);
+    
+    while (++i < static_cast<int>(Channels.size())){
         try{
             if (FollowGrammar(Channels.at(i)) == true){
                 if(FindInGlobalChannel(Channels.at(i)) == TOBE_BUILDED ){ 
@@ -211,7 +213,7 @@ void    JoinStart(int __fd, std::string& clientMsg, Myvector& Channels, Myvector
             if (i < static_cast<int>(keys.size())){ 
                 JoinWithKey(__fd, Server::ServerClients.at(__fd).nickname, Channels.at(i), keys.at(i), KEY_PROVIDED);
             }
-            else {//[a  Keystatus == true just back you don't have the key 
+            else {//[a  IF Keystatus == true just back you don't have the key 
                     std::string EmptyPass("");
                         JoinWithKey(__fd ,Server::ServerClients.at(__fd).nickname, Channels.at(i), EmptyPass , NO_KEY_PROVIDED);
                     }//!a]
@@ -224,7 +226,6 @@ void    JoinStart(int __fd, std::string& clientMsg, Myvector& Channels, Myvector
                         e.what();    
                 }
 }
-    static_cast<void> (clientMsg);
 }
 
 void    JoinProcessor( std::string& clientMsg, int __fd )
@@ -254,6 +255,3 @@ void    JoinMessage(std::string& clientMsg, int __fd){
     }
 }
 
-const char* InvalidChannelName::what() const throw(){
-    return ("");
-}

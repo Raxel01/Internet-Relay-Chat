@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 18:16:10 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 15:08:54 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 05:26:56 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,15 @@ class EX_INVALIDLIMITUSER : public std::exception
 {
     public :
         virtual const char *what() const throw();
+};
+
+class EX_DELIVERMESSAGE : public std::exception
+{
+    public :
+        virtual const char *what() const throw();
+};
+
+class InvalidChannelName : public std::exception{
+    public :
+            virtual const char* what() const throw(); 
 };

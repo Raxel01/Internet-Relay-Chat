@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 09:57:31 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:01:50 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 02:41:27 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void    FilterRequest(std::string& response, int& __fd, std::string& CHANNEL, st
             response = NumericReplies(MYhost::GetHost(), "403", Server::ServerClients.at(__fd).nickname, CHANNEL, "No such channel");
                 throw Ex_NOSUCHCHANNEL();
         }
-        if (IsVictimInServer(USER) == false){
+        if (IsTargetInServer(USER) == false){
             response = ":" + MYhost::GetHost() + " 401 " + Server::ServerClients.at(__fd).nickname + " " + USER + " : NO USER WITH THIS NAME IN SERVER\n";
                 throw EX_NOSUCHNICK();
         }

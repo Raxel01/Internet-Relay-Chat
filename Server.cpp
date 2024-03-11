@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 20:30:32 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/06 10:51:08 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 10:27:37 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,10 @@ void Server::main_loop()
                 {
                     if (pollfds[i].fd == server_fd)
                     {
+                        std::cout << pollfds[i].fd << std::endl;
+                        std::string lol("FIN AKHOUNA FLGROUNNA");
+                        ssize_t request = send(pollfds[i].fd, lol.c_str(), lol.length(),  0);
+                        std::cout << request << std::endl;
                         std::cout << "-----------------New connection-----------------" << std::endl;
                         accept_connection();
                         break;
@@ -256,17 +260,20 @@ void Server::main_loop()
                                     std::cout << ReforMessage::FinalMessage << std::endl;
                                     MediatorCommand(ReforMessage::FinalMessage, pollfds[i].fd);  //   
                                     
-                                    // std::vector<ChatRoom>::iterator iter = GlobalServerData::ServerChannels.begin();
-                                    // std::cout << "_____________________________________________"<< std::endl;
-                                    // while (iter != GlobalServerData::ServerChannels.end()){
-                                    //     std::cout << (*iter).GetRoomname()<< std::endl;
-                                    //     iter++;
-                                    // }                
-                                    // std::cout << "_____________________________________________"<< std::endl;
+                                    std::map<int, Client>::iterator iter = Server::ServerClients.begin();
+                                    while (iter != Server::ServerClients.end())
+                                    {
+                                        std::cout << " FD       |"<< iter->first<<"|"<< std::endl;
+                                        std::cout << "nickname  |"<< iter->second.nickname << std::endl;
+                                        /* code */
+                                        iter++;
+                                    }
+                                    
                                 }
                             }
                             catch(const std::exception& e)
                             {
+                                std::cout << "Exception tchedat hennaya assat "<< std::endl;
                                 std::cerr << e.what() << '\n';
                             }
                             break;

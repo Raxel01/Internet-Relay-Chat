@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:41 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:58:21 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 02:41:28 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void     ExtractVictims(std::string& userList, std::vector<std::string>& Victims
     }
 }
 
-bool    IsVictimInServer(std::string Name)
+bool    IsTargetInServer(std::string Name)
 {
     std::map<int, Client>::iterator iter = Server::ServerClients.begin();
     
@@ -48,7 +48,7 @@ void    KickExecutor(std::string&channelName , Roomiter& iter, int __fd,std::vec
     
     while (++i < Victims.size()){
         try{
-            if (IsVictimInServer(Victims.at(i)) == true)
+            if (IsTargetInServer(Victims.at(i)) == true)
             {
                 if ((*iter).IsalreadyMember(Victims.at(i)) == true)
                 {

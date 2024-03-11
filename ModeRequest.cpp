@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:02:40 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 06:23:20 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void    TypeD(char mode, Roomiter& RoomObj, enum MODETYPE CMODETYPE)
 }
 
 void    TypeB(int __fd, Roomiter& RoomObj, enum MODETYPE CMODETYPE, std::string AddAsChanop, std::string& response){
-    if (IsVictimInServer(AddAsChanop) == false){
+    if (IsTargetInServer(AddAsChanop) == false){
         response = ":" + MYhost::GetHost() + " 401 " + Server::ServerClients.at(__fd).nickname + " " + AddAsChanop + " : NO USER WITH THIS NAME IN SERVER\n";
             throw EX_NOSUCHNICK();
      }
@@ -95,7 +95,7 @@ bool    LimitChecker(std::string Argument, int ActiveUser)
         return false; // There is an element diff to diggits
 
     Argdouble = std::strtod(Argument.c_str(), NULL);
-    if (Argdouble < ActiveUser || Argdouble > 900)
+    if (Argdouble < ActiveUser || Argdouble > LIMITUSERS)
         return false;
     return true;
 }
@@ -128,7 +128,6 @@ void    TypeC(char mode, int __fd, Roomiter& RoomObj, enum MODETYPE CMODETYPE, s
     }
     
     else if (CMODETYPE == REMOVE_MODE){
-        std::cout << " : : : WA HANNI HENAAA AZAMEEEEEEEL : : : "<< std::endl;
         if (mode == 'k'){
             if ((*RoomObj).keyStatus == true){
             (*RoomObj).keyStatus = false;
@@ -187,7 +186,7 @@ void    AddChannelMode(Roomiter& RoomObj, int __fd, std::string& CleanMode, std:
                 }
                 args.erase(args.begin());
             }
-            else{ // There is not args For required Mode 'o'
+            else{ // There is not args For required Mode 'k' 'l'
                 std::string response = ":" + MYhost::GetHost() + " 696 " + Server::ServerClients.at(__fd).nickname + " " + (*RoomObj)._RoomName + " "+CleanMode[flag] + " :Please Specify an arg For '" + CleanMode[flag] +"' mode"  + " \n";
                     send(__fd, response.c_str(), response.length(), 0);
             }
@@ -316,6 +315,7 @@ void    ModeProcessor(size_t& OccurSpace, int __fd, std::string& CHANNEL, std::s
 bool validFlags(char c){
     return (c == 'o' || c == 'l' || c == 'k' || c == 'i' || c == 't');
 }
+
 /*
     @ : Extract Unknow flags in MODE string
     @:  Here is Le3jinna 
@@ -352,7 +352,7 @@ void    ModeMessage(std::string& clientMsg, int __fd)
     
     if (OccurSpace == 0){
         std::string response = ":" + MYhost::GetHost() + " 461 " + Server::ServerClients.at(__fd).nickname + " MODE " + ": NO ENOUGH PARAMETERS" + "\n" +
-            NumericReplies(MYhost::GetHost(), "999", Server::ServerClients.at(__fd).nickname, "MODE", "<CHANNEL> + [+/-]{i|o|t|k|l}");
+            NumericReplies(MYhost::GetHost(), "999", Server::ServerClients.at(__fd).nickname, "MODE", "<CHANNEL> [+/-]{i|o|t|k|l}");
                 send(__fd, response.c_str(), response.length(), 0);
     }
     else

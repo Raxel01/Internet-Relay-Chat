@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/01 18:16:11 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/09 15:09:14 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 05:25:57 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,3 +60,10 @@ const char * EX_INVALIDLIMITUSER::what() const throw(){
     return "";
 }
 
+const char * EX_DELIVERMESSAGE::what() const throw(){
+    return "";
+}
+
+const char* InvalidChannelName::what() const throw(){
+    return ("");
+}
