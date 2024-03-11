@@ -86,7 +86,13 @@ int	Server::start()
 					else {
 						char buffer[1024] = {0};
 						ssize_t	rcvlen = recv(sockets[i].fd, buffer, 1024, 0);
-						if (rcvlen <= 0) {
+						if (rcvlen > 512) {
+							it = findSocket(sockets[i].fd);
+							std::string format;
+							format = ":" + it->second.client_ip + " 417 " + " " + std::to_string(it->first) + " :Line too long\r\t\n";
+							mySend(format.c_str(), it->first);
+						}
+						else if (rcvlen <= 0) {
 							it = findSocket(sockets[i].fd);
 							std::cout << RED << " * Client " << PURPLE << it->second.client_ip << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
