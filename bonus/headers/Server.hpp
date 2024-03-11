@@ -6,7 +6,7 @@
 /*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 01:12:22 by mbachar          ###   ########.fr       */
+/*   Updated: 2024/03/11 14:50:25 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 # include	<sstream>
 # include	"Client.hpp"
 # include	"Bot.hpp"
+# include <netdb.h>
+# include <arpa/inet.h>
 
 # define	RESET	"\x1b[0m"
 # define	GREEN	"\x1b[1;32m"
@@ -41,6 +43,7 @@ class Server
 		// Attributes
 		std::string	_port;
 		std::string	_password;
+		std::string	_ipaddress;
 		static std::map<int, Client> ServerClients;
 		// Methods
 		Server(std::string port, std::string password);
