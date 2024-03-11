@@ -28,3 +28,9 @@ std::string	extractKey(const char	*buffer)
 		key.resize(j - 2);
 	return key;
 }
+
+std::string tostring(int value) {
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
