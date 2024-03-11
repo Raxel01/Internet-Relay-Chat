@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 07:23:56 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:42:03 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ ChatRoom::~ChatRoom(){
     if (GlobalServerData::LastChannelUser != -1){
         time_t theTime = time(NULL);
         std::string response =":" + MYhost::GetHost() + " 999 " + "SaHit ~Good By :> Last Warrior / No Admin ..." + this->_RoomName + "\n";
-            response += ":" + MYhost::GetHost() + " 999 " + "Channel Breaked RIP : " + \
+            response += ":" + MYhost::GetHost() + " 999 " + "Channel Destroyed RIP : " + \
                 ctime(&theTime);
                     send(GlobalServerData::LastChannelUser, response.c_str(), response.length(), 0);
                         GlobalServerData::LastChannelUser = -1;

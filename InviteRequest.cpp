@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 09:57:31 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/11 02:41:27 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:46:28 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,10 @@ void    InviteProcessor(std::string& USER, std::string& CHANNEL, int __fd)
         FilterRequest(response, __fd, CHANNEL, USER, RoomObj);
         //INVITE REQUEST will be accepted;
         (*RoomObj).AddToInvited(USER);
-        if ((*RoomObj).IsBanned(USER) == true){//My kick add The user to ban List so invite can Pardon THIS USER [Banned 1]
+        if ((*RoomObj).IsBanned(USER) == true){ //My kick add The user to ban List so invite can Pardon THIS USER [Banned 1]
             (*RoomObj).PardonUser(USER);
         }
-        response = ":" + MYhost::GetHost() + " 341 " + Server::ServerClients.at(__fd).nickname + USER + CHANNEL + "\n";
+        response = ":" + MYhost::GetHost() + " 341 " + Server::ServerClients.at(__fd).nickname + " " + USER + " "+CHANNEL + "\n";
             notice = NOTICE_INVITED;
                 throw EX_VALIDINVITE();
     }

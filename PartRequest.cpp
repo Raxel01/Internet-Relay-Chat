@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 03:49:42 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 20:44:56 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,11 @@ void    PartProcessor(DEQUE& Channels, int __fd, std::string& Reason)
                 /* I think I'll Broadcast Here */
                 if ((*Finder).Roomsize() == 0 || (*Finder)._Mediators.size() == 0){// if no admin or no member the Channel Will be Destroyed
                         GlobalServerData::LastChannelUser = __fd;
+                    if ((*Finder)._Mediators.size() == 0){
+                        time_t theTime = time(NULL);
+                        std::string resp = ":" + MYhost::GetHost() + " 999 " + (*Finder)._RoomName + " Destroyed RIP : " + ctime(&theTime);
+                            BroadcastMessage(Server::ServerClients.at(__fd).nickname, "", Finder, resp);
+                    } 
                         GlobalServerData::ServerChannels.erase(Finder);
                     }
             }

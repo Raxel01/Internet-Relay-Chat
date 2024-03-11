@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:29:36 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 02:05:16 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:12:18 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,22 +55,28 @@ class ChatRoom
         void            Addasmember(std::string& newMember);
         void            AddasMediator(std::string& NewMediator);
         void            AddToInvited(std::string& NewInvited);
+        
         void            UpgradeToChanoP(std::string USER);
-        void            ChannelMode(int __fd);
-        void            BanThisUser(std::string User);
-        void            PardonUser(std::string USER);//Remove FromBanList When invite
-        std::string     getTOPIC();
         void            ToRegularUser (std::string USER);
-        void            SetTOPIC(std::string Topic);
-        void            eraseFromInvList(std::string Invited);
-        // void            removeMember(std::string& tobeRemoved);
-        void            PartMediator(std::string& toPart);
+        
+        void            ChannelMode(int __fd);
+        
         bool            IsalreadyMember(std::string& MayUser);
         bool            IsMediator(std::string& MayMediator);
         bool            IsBanned(std::string& MayBanned);
-        DEQUE::iterator IsRegularUser(std::string User);
         bool            IsInviteList(std::string& TargetUser);
+        DEQUE::iterator IsRegularUser(std::string User);
+        
+        void            BanThisUser(std::string User);
+        void            PardonUser(std::string USER);//Remove FromBanList When invite
+        void            eraseFromInvList(std::string Invited);
+        
+        std::string     getTOPIC();
+        void            SetTOPIC(std::string Topic);
+        
+        void            PartMediator(std::string& toPart);
         std::string     MembersList();
+        
         void            getelems();
         std::string&    GetRoomname();
         size_t                Roomsize();
