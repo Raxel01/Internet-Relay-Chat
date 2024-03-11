@@ -39,12 +39,12 @@ void	Bot::parseBuffer()
 		return ;
 	}
 	else if (param == "weather") {
-		format = ":" + clientIP + " 911 " + " " + std::to_string(clientSocket) + " :Look at the sky and tell me idiot!\r\t\n";
+		format = ":" + clientIP + " 911 " + " " + tostring(clientSocket) + " :Look at the sky and tell me idiot!\r\t\n";
 		mySend(format.c_str());
 		return ;
 	}
 	else {
-		format = ":" + clientIP + " 911 " + " " + std::to_string(clientSocket) + " :What?!! You speaking chinese, dummy?!\r\t\n";
+		format = ":" + clientIP + " 911 " + " " + tostring(clientSocket) + " :What?!! You speaking chinese, dummy?!\r\t\n";
 		mySend(format.c_str());
 		return ;
 	}
@@ -109,6 +109,6 @@ void	Bot::randomFactsGenerator()
 		fact = "Didnt your momma teach you that asking too many questions is rude kiddo?";
 		break;
 	}
-	format = ":" + clientIP + " 911 " + " " + std::to_string(clientSocket) + " " + fact + "\r\t\n";
+	format = ":" + clientIP + " 911 " + " " + tostring(clientSocket) + " " + fact + "\r\t\n";
 	mySend(format.c_str());
 }

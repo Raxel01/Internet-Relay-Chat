@@ -26,8 +26,12 @@
 # include	<sstream>
 # include	"Client.hpp"
 # include	"Bot.hpp"
-# include <netdb.h>
-# include <arpa/inet.h>
+# include	<netdb.h>
+# include	<arpa/inet.h>
+# include	<signal.h>
+# include	<cstring>
+# include	<string>
+# include	<sstream>
 
 # define	RESET	"\x1b[0m"
 # define	GREEN	"\x1b[1;32m"
@@ -57,3 +61,4 @@ class Server
 
 void		error(std::string errorMessage);
 std::string	extractKey(const char *buffer);
+std::string tostring(int value);
