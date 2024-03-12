@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 19:00:53 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/11 20:57:26 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/12 07:03:09 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void    QUITmessage(int __fd)
     Roomiter iter = GlobalServerData::ServerChannels.begin();
     std::string User = Server::ServerClients.at(__fd).nickname;
     
-    std::string response = ":" + User + "!~" + "@" + Server::ServerClients.at(__fd).client_ip + " QUIT " + ": This User Quit \n";
+    std::string response = ":" + User + "!~" + "@" + Server::ServerClients.at(__fd).client_ip + " QUIT " + ": User Quit \n";
     while (iter != GlobalServerData::ServerChannels.end())
     {
         if ((*iter).IsalreadyMember(Server::ServerClients.at(__fd).nickname) == true)
@@ -53,6 +53,6 @@ void    QUITmessage(int __fd)
         }
     iter++;
     }
-    //Put Your fucking Bachar Put changes Here
+    //Bachar Put changes Here
     // close(__fd);
 }

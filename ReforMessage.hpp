@@ -6,21 +6,21 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:15:00 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/10 03:40:36 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/12 07:27:56 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <iostream>
-#include <iomanip>
 #include <sstream>
 #include <sys/socket.h>
 
 /*
-    @: Static memebers Class Constructor as Private  will never let the class Instanciated
+    @: Static members Class Constructor as Private  will never let the class Instanciated
 */
 
+#include <iomanip>
 #define    KICK       "KICK"
 #define    INVITE     "INVITE"
 #define    MODE       "MODE"
