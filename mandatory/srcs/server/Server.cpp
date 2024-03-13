@@ -1,5 +1,5 @@
 #include "../../headers/Server.hpp"
-
+#include "../../headers/Commands.hpp" 
 std::map<int, Client> Server::ServerClients;
 
 Server::Server(std::string port, std::string password)
@@ -172,6 +172,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 	std::string	nickname;
 	std::string	username;
 	std::string	format;
+	std::string asString;
 
 	if (!std::strncmp(buffer.c_str(), "PASS ", 5) || !std::strncmp(buffer.c_str(), "PASS\t", 5)) {
 		if (it->second.isRegistred) {
@@ -343,7 +344,11 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		mySend(" * Success   : Canis Lupus part here.\n", it->first);
+		asString = buffer;
+        ReforMessage::GlobalReform(asString);
+        std::cout << ReforMessage::FinalMessage << " it FD : " << it->first <<std::endl;
+        MediatorCommand(ReforMessage::FinalMessage, it->first);
+		// mySend(" * Success   : Canis Lupus part here.\n", it->first);
 	}
 }
 

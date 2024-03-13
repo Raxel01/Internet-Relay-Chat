@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
+#    By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/03/09 22:49:19 by mbachar          ###   ########.fr        #
+#    Updated: 2024/03/13 20:44:53 by abait-ta         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,12 +19,26 @@ MAN_SERVERPATH	=	./mandatory/srcs/server
 
 MAN_CMDPATH		=	./mandatory/srcs/commands
 
+MAN_HEAD		=	./mandatory/headers
+
 MAN_SRC			=	./mandatory/main.cpp \
 					$(MAN_SERVERPATH)/Server.cpp \
 					$(MAN_SERVERPATH)/Client.cpp \
-					$(MAN_SERVERPATH)/utils.cpp
+					$(MAN_SERVERPATH)/utils.cpp \
+					$(MAN_CMDPATH)/ChatRoom.cpp \
+					$(MAN_CMDPATH)/GlobalException.cpp \
+					$(MAN_CMDPATH)/InviteRequest.cpp \
+					$(MAN_CMDPATH)/JoinRequest.cpp \
+					$(MAN_CMDPATH)/KickRequest.cpp \
+					$(MAN_CMDPATH)/MessageRecognizer.cpp \
+					$(MAN_CMDPATH)/ModeRequest.cpp \
+					$(MAN_CMDPATH)/PartRequest.cpp \
+					$(MAN_CMDPATH)/PRIVmsgRequest.cpp \
+					$(MAN_CMDPATH)/QUITrequest.cpp \
+					$(MAN_CMDPATH)/ReforMessage.cpp \
+					$(MAN_CMDPATH)/TOPICrequest.cpp
 
-MAN_INCLUDE		=	./mandatory/headers/Server.hpp ./mandatory/headers/Client.hpp
+MAN_INCLUDE		=	$(MAN_HEAD)/Server.hpp $(MAN_HEAD)/Client.hpp $(MAN_HEAD)/ChatRoom.hpp $(MAN_HEAD)/Commands.hpp $(MAN_HEAD)/GlobalException.hpp $(MAN_HEAD)/ReforMessage.hpp
 
 MAN_OBJ			=	${MAN_SRC:.cpp=.o}
 

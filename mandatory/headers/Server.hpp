@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
+/*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/11 14:50:51 by mbachar          ###   ########.fr       */
+/*   Updated: 2024/03/13 20:55:17 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include	<cstring>
 # include	<string>
 # include	<sstream>
+#include 	"ReforMessage.hpp"
 
 # define	RESET	"\x1b[0m"
 # define	GREEN	"\x1b[1;32m"
