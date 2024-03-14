@@ -1,4 +1,5 @@
 #include "../../headers/Server.hpp"
+#include "../../headers/Commands.hpp" 
 
 std::map<int, Client> Server::ServerClients;
 
@@ -172,6 +173,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 	std::string	nickname;
 	std::string	username;
 	std::string	format;
+	std::string	asString;
 
 	if (!std::strncmp(buffer.c_str(), "PASS ", 5) || !std::strncmp(buffer.c_str(), "PASS\t", 5)) {
 		if (it->second.isRegistred) {
@@ -260,7 +262,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		size_t j = 0;
 		i++;
 		if (count_spaces == 4) {
-			while (buffer.c_str()[i]) {
+			while (buffer.c_str()[i] && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\n') {
 				username.resize(j + 1);
 				username[j++] = buffer.c_str()[i++];
 			}
@@ -271,16 +273,15 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 					return ;
 				}
 			}
-			username.resize(j - 1);
 			it->second.username = username;
-			it->second.isusername = true; // Welcome message
-			format = ":" + Server::_ipaddress + " 001 " + " " + tostring(it->first) + " :Welcome to FT_IRC server. You have successfuly registred to the server.\r\t\n";
+			it->second.isusername = true;
+			format = RPL_WELCOME(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 002 " + " " + tostring(it->first) + " :Your host is " + Server::_ipaddress + " .\r\t\n";
+			format = RPL_YOURHOST(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 003 " + " " + tostring(it->first) + " :This server was created on Feb 15 2024.\r\t\n";
+			format = RPL_CREATED(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 005 " + " " + tostring(it->first) + " :use (HELP) for more commands, and enjoy your stay :D.\r\t\n";
+			format = RPL_MYINFO(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
 		}
 		else {
@@ -345,15 +346,14 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		Bot	emmet(it->first, buffer.c_str(), Server::_ipaddress);
 	}
 	else {
-		// You can put your functions here
-		// if you want to send a message to a client use : mySend("Your Message", it->first)
-		// Notice : dont change the second parameter of mySend() ==> it->first
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
 			format = ":" + Server::_ipaddress + " 461 " + " " + tostring(it->first) + " :You need to be authenticated before using this command\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		mySend(" * Success   : Canis Lupus part here.\n", it->first);
+		asString = buffer;
+        ReforMessage::GlobalReform(asString);
+        MediatorCommand(ReforMessage::FinalMessage, it->first);
 	}
 }
 

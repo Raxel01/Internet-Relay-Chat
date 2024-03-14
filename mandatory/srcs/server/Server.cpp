@@ -1,5 +1,6 @@
 #include "../../headers/Server.hpp"
 #include "../../headers/Commands.hpp" 
+
 std::map<int, Client> Server::ServerClients;
 
 Server::Server(std::string port, std::string password)
@@ -275,13 +276,13 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			// username.resize(j - 1);
 			it->second.username = username;
 			it->second.isusername = true; // Welcome message
-			format = ":" + Server::_ipaddress + " 001 " + " " + tostring(it->first) + " :Welcome to FT_IRC server. You have successfuly registred to the server.\r\t\n";
+			format = RPL_WELCOME(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 002 " + " " + tostring(it->first) + " :Your host is " + Server::_ipaddress + " .\r\t\n";
+			format = RPL_YOURHOST(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 003 " + " " + tostring(it->first) + " :This server was created on Feb 15 2024.\r\t\n";
+			format = RPL_CREATED(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = ":" + Server::_ipaddress + " 005 " + " " + tostring(it->first) + " :use (HELP) for more commands, and enjoy your stay :D.\r\t\n";
+			format = RPL_MYINFO(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
 		}
 		else {

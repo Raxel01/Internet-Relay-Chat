@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/03/13 20:44:53 by abait-ta         ###   ########.fr        #
+#    Updated: 2024/03/14 02:19:47 by mbachar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,13 +53,25 @@ BONUS_BOTPATH		=	./bonus/srcs/bot
 
 BONUS_CMDPATH		=	./bonus/srcs/commands
 
-BONUS_SRC			=	./bonus/main.cpp \
+BONUS_SRC			=	./mandatory/main.cpp \
 						$(BONUS_SERVERPATH)/Server.cpp \
 						$(BONUS_SERVERPATH)/Client.cpp \
 						$(BONUS_SERVERPATH)/utils.cpp \
+						$(BONUS_CMDPATH)/ChatRoom.cpp \
+						$(BONUS_CMDPATH)/GlobalException.cpp \
+						$(BONUS_CMDPATH)/InviteRequest.cpp \
+						$(BONUS_CMDPATH)/JoinRequest.cpp \
+						$(BONUS_CMDPATH)/KickRequest.cpp \
+						$(BONUS_CMDPATH)/MessageRecognizer.cpp \
+						$(BONUS_CMDPATH)/ModeRequest.cpp \
+						$(BONUS_CMDPATH)/PartRequest.cpp \
+						$(BONUS_CMDPATH)/PRIVmsgRequest.cpp \
+						$(BONUS_CMDPATH)/QUITrequest.cpp \
+						$(BONUS_CMDPATH)/ReforMessage.cpp \
+						$(BONUS_CMDPATH)/TOPICrequest.cpp \
 						$(BONUS_BOTPATH)/Bot.cpp
 
-BONUS_INCLUDE		=	./bonus/headers/Server.hpp ./bonus/headers/Client.hpp ./bonus/headers/Bot.hpp
+BONUS_INCLUDE		=	$(BONUS_HEAD)/Server.hpp $(BONUS_HEAD)/Client.hpp $(BONUS_HEAD)/Bot.hpp $(BONUS_HEAD)/ChatRoom.hpp $(BONUS_HEAD)/Commands.hpp $(BONUS_HEAD)/GlobalException.hpp $(BONUS_HEAD)/ReforMessage.hpp
 
 BONUS_OBJ			=	${BONUS_SRC:.cpp=.o}
 
