@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/11 19:00:53 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 20:46:08 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/14 20:16:41 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void    QUITmessage(int __fd)
     Roomiter iter = GlobalServerData::ServerChannels.begin();
     std::string User = Server::ServerClients.at(__fd).nickname;
     
-    std::string response = ":" + User + "!~" + "@" + Server::ServerClients.at(__fd).client_ip + " QUIT " + ": User Quit \n";
+    std::string response = ":" + User + "!~" + Server::ServerClients.at(__fd).username +"@" + Server::ServerClients.at(__fd).client_ip + " QUIT " + ": User Quit \n";
     while (iter != GlobalServerData::ServerChannels.end())
     {
         if ((*iter).IsalreadyMember(Server::ServerClients.at(__fd).nickname) == true)

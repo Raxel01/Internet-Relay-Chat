@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:25:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 22:45:51 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/14 22:09:26 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,7 @@ std::string RegularUsers(std::string& cmd,std::string& clientMsg, int __fd){
         PRIVMessage(clientMsg, __fd);
         return (PRIVMSG);
     }
-    else if (cmd.compare(QUIT) == 0){
-        
-        QUITmessage(__fd);
-        
-    }
-    else if (cmd.compare(PONG) != 0){
+    else if (cmd.compare(PONG) != 0 ){
         std::string response(NumericReplies(MYhost::GetHost(), "421", Server::ServerClients.at(__fd).nickname, cmd, "Unknown command"));
             send (__fd, response.c_str(), response.length(), 0);
                 return  UNKNOW;

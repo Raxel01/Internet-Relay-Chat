@@ -116,7 +116,8 @@ int	Server::start()
 							mySend(format.c_str(), it->first);
 						}
 						// In case recv() fails, delete client socket from everywhere
-						else if (rcvlen <= 0) {
+						/*I Added Here the quit for nc and LIMECHAT */
+						else if (rcvlen <= 0 || strcmp(buffer, "QUIT\n") == 0 || strcmp(buffer, "QUIT\r\n") == 0) {//ADD : may add if the buffer = to "QUIT" in first Field
 							it = findSocket(sockets[i].fd);
 							std::cout << RED << " * Client " << PURPLE << Server::_ipaddress << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
@@ -124,6 +125,7 @@ int	Server::start()
 								if (it_->fd == sockets[i].fd)
 									break ;
 							}
+							QUITmessage(sockets[i].fd);// Function added Here;
 							close(sockets[i].fd);
 							sockets.erase(it_);
 							Server::ServerClients.erase(it->first);
@@ -188,7 +190,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 		password = extractKey(buffer.c_str());
 		if (password != _password) {
-			format = ":" + Server::_ipaddress + " 462 " + " " + tostring(it->first) + " :Incorrect password\r\t\n";
+			format = ":" + Server::_ipaddress + " 464 " + " " + tostring(it->first) + " :Incorrect password\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
@@ -220,7 +222,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 		for (size_t i = 0; i < nickname.size(); i++) {
 			if (nickname[i] == ' ' || nickname[i] == '\t') {
-				format = ":" + Server::_ipaddress + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\t\n";
+				format = ":" + Server::_ipaddress + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\t\n";//STOPED HERE
 				mySend(format.c_str(), it->first);
 				return ;
 			}
@@ -286,14 +288,14 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 		}
 		else {
-			format = ":" + Server::_ipaddress + " 913 " + " " + tostring(it->first) + " :Missing arguments\r\t\n";
+			format = ":" + Server::_ipaddress + " 461 " + " " + tostring(it->first) + " :Missing arguments\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
 	}
 	else if (!std::strncmp(buffer.c_str(), "HELP", 4)) {
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
-			format = ":" + Server::_ipaddress + " 461 " + " " + tostring(it->first) + " :You need to be authenticated before using this command\r\t\n";
+			format = ":" + Server::_ipaddress + " 451 " + " " + tostring(it->first) + " :You need to be authenticated before using this command\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}

@@ -6,11 +6,12 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 17:34:44 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 20:58:33 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/14 21:04:53 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/Commands.hpp"
+
 
 void    TypeD(char mode, Roomiter& RoomObj, enum MODETYPE CMODETYPE)
 {
@@ -86,6 +87,10 @@ void    ExtractArgs(std::string& argString, DEQUE& args){
     }
 }
 
+/*ADD : change the comparaison with LIMITUSER to MAX   INT */
+/*
+    if limit > INT_MAX : Display Error;
+*/
 bool    LimitChecker(std::string Argument, int ActiveUser)
 {
     size_t NonValidelem = Argument.find_first_not_of("0123456789");
@@ -95,11 +100,12 @@ bool    LimitChecker(std::string Argument, int ActiveUser)
         return false; // There is an element diff to diggits
 
     Argdouble = std::strtod(Argument.c_str(), NULL);
-    if (Argdouble < ActiveUser || Argdouble > LIMITUSERS)
+    if (Argdouble < ActiveUser || Argdouble > 2147483647)
         return false;
     return true;
 }
 
+/*if limit > 900 [LIMITUSER] limit = LIMITUSER*/
 void    TypeC(char mode, int __fd, Roomiter& RoomObj, enum MODETYPE CMODETYPE, std::string Argument, std::string& response)
 {
     if (CMODETYPE == ADD_MODE){
@@ -115,7 +121,10 @@ void    TypeC(char mode, int __fd, Roomiter& RoomObj, enum MODETYPE CMODETYPE, s
             if (LimitChecker( Argument, (*RoomObj).Roomsize() ) == true ){
                 if ((*RoomObj).HaveLimitUser == false)
                     (*RoomObj).HaveLimitUser = true;
-                  (*RoomObj)._AllowedUsers = std::atoi(Argument.c_str());
+                    if (std::atoi(Argument.c_str()) > LIMITUSERS)
+                        (*RoomObj)._AllowedUsers = LIMITUSERS;
+                    else
+                        (*RoomObj)._AllowedUsers = std::atoi(Argument.c_str());
                 (*RoomObj).ModeReply += "l"   ;
             (*RoomObj).ModeArgs+= " " + Argument + " ";
             }
@@ -149,6 +158,7 @@ void    TypeC(char mode, int __fd, Roomiter& RoomObj, enum MODETYPE CMODETYPE, s
 
 void    AddChannelMode(Roomiter& RoomObj, int __fd, std::string& CleanMode, std::string& ModeArgument, enum MODETYPE CMODETYPE)
 {
+    
     short flag = -1;
     DEQUE   args;
     std::string response;
