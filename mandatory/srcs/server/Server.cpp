@@ -261,7 +261,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		size_t j = 0;
 		i++;
 		if (count_spaces == 4) {
-			while (buffer.c_str()[i]) {
+			while (buffer.c_str()[i] && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n') {
 				username.resize(j + 1);
 				username[j++] = buffer.c_str()[i++];
 			}
@@ -272,7 +272,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 					return ;
 				}
 			}
-			username.resize(j - 1);
+			// username.resize(j - 1);
 			it->second.username = username;
 			it->second.isusername = true; // Welcome message
 			format = ":" + Server::_ipaddress + " 001 " + " " + tostring(it->first) + " :Welcome to FT_IRC server. You have successfuly registred to the server.\r\t\n";
@@ -336,9 +336,6 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 	}
 	else {
-		// You can put your functions here
-		// if you want to send a message to a client use : mySend("Your Message", it->first)
-		// Notice : dont change the second parameter of mySend() ==> it->first
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
 			format = ":" + Server::_ipaddress + " 461 " + " " + tostring(it->first) + " :You need to be authenticated before using this command\r\t\n";
 			mySend(format.c_str(), it->first);
@@ -346,9 +343,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 		asString = buffer;
         ReforMessage::GlobalReform(asString);
-        std::cout << ReforMessage::FinalMessage << " it FD : " << it->first <<std::endl;
         MediatorCommand(ReforMessage::FinalMessage, it->first);
-		// mySend(" * Success   : Canis Lupus part here.\n", it->first);
 	}
 }
 
