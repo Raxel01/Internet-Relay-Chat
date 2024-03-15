@@ -29,7 +29,7 @@ int	Server::parseInput()
 	return 0;
 }
 
-int	Server::start()
+void	Server::start()
 {
 	signal(SIGPIPE, SIG_IGN);
 	char 		hostbuffer[256];
@@ -43,13 +43,19 @@ int	Server::start()
 
 	// Get the hostname
     if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
-        return (error("failed to return host name of the current process."), 1);
+	{
+        error("failed to return host name of the current process.");
+		exit (1);
+	}
 
     // Function's name points to it's functionality :D
     struct hostent *host_entry;
     host_entry = gethostbyname(hostbuffer);
     if (host_entry == NULL)
-        return (error(""), 1);
+	{
+        error("failed to get host by name.");
+		exit (1);
+	}
 
     // Convert IPv4 address from binary to text form
     Server::_ipaddress = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
@@ -57,23 +63,38 @@ int	Server::start()
 	// Create a socket node for the server
 	int	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
-		return (error("socket function couldn't create an endpoint for communication."), 1);
+	{
+		error("socket function couldn't create an endpoint for communication.");
+		exit (1);
+	}
 
 	// Set socket opt so we can re-use it in case of abort
 	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-		return (error("socket was unable to reuse the ip address."), 1);
+	{
+		error("socket was unable to reuse the ip address.");
+		exit (1);
+	}
 
 	// Bind the socket to ip adress and port number
 	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1)
-		return (error("socket was unable to bind to ip adress and port number."), 1);
+	{
+		error("socket was unable to bind to ip adress and port number.");
+		exit (1);
+	}
 
 	// Set socket to non-blocking mode
 	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1)
-		return (error("failed to set the socket to non-blocking mode."), 1);
+	{
+		error("failed to set the socket to non-blocking mode.");
+		exit (1);
+	}
 
 	// Listen to incoming connections
 	if (listen(serverSocket, 128) == -1)
-		return (error("socket could not listen to incoming connections."), 1);
+	{
+		error("socket could not listen to incoming connections.");
+		exit (1);
+	}
 
 	std::cout << GREEN << " * Server started, listening on port " << PURPLE << _port << GREEN << " for any incoming connections." << RESET << std::endl;
 
@@ -163,10 +184,9 @@ int	Server::start()
 			}
 		}
 		catch (std::exception &e) {
-			return (error(e.what()), 1);
+			error(e.what());
 		}
 	}
-    return 0;
 }
 
 void	Server::processClientData(std::string buffer, std::map<int, Client>::iterator &it)
@@ -183,10 +203,17 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
+		if (std::strlen(buffer.c_str()) <= 5) {
 			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing password\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
+		}
+		for (size_t i = 5; i < buffer.size(); i++) {
+			if (buffer[i] == ' ' || buffer[i] == '\t') {
+				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Password musn't contain whitespaces\r\t\n";
+				mySend(format.c_str(), it->first);
+				return ;
+			}
 		}
 		password = extractKey(buffer.c_str());
 		if (password != _password) {
@@ -195,6 +222,8 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			return ;
 		}
 		if (password == _password) {
+			format = "* Success : You have entered the correct password.\n* Hint    : Enter now (NICK your_nickname) to set yourself a nickname.\n";
+			mySend(format.c_str(), it->first);
 			it->second.isRegistred = true;
 		}
 	}
@@ -209,31 +238,28 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
+		if (std::strlen(buffer.c_str()) < 5) {
 			format = ":" + it->second.client_ip + " 431 " + " " + tostring(it->first) + " :Missing nickname\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		size_t j = 0;
-		nickname = "";
-		for (size_t i = 5; i < std::strlen(buffer.c_str()); i++) {
-			if (buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n' && buffer.c_str()[i] != ' ') {
-				nickname.resize(j + 1);
-				nickname[j] = buffer[i];
-				j++;
+		for (size_t i = 5; i < buffer.size(); i++) {
+			if (buffer[i] == ' ' || buffer[i] == '\t') {
+				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\t\n";
+				mySend(format.c_str(), it->first);
+				return ;
 			}
+		}
+		nickname = extractKey(buffer.c_str());
+		if (nickname.length() > 9) {
+			format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname length should be less than 9 characters\r\t\n"; // Error code should be changed
+			mySend(format.c_str(), it->first);
+			return ;
 		}
 		if (nickname[0] == '&' || nickname[0] == '#' || nickname[0] == ':' || nickname[0] == '@' || std::isdigit(nickname[0])) {
 			format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain '#' or '&' or ':' as trailing characters\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
-		}
-		for (size_t i = 0; i < nickname.size(); i++) {
-			if (nickname[i] == ' ' || nickname[i] == '\t') {
-				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\t\n";//STOPED HERE
-				mySend(format.c_str(), it->first);
-				return ;
-			}
 		}
 		for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 			if (nickname == it_->second.nickname) {
@@ -242,6 +268,8 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				return ;
 			}
 		}
+		format = "* Success : You have successfully set yourself a nickname.\n* Hint    : Enter now (USER your_username 0 * your_realname) to set yourself a username.\n";
+			mySend(format.c_str(), it->first);
 		it->second.nickname = nickname;
 		it->second.isnickname = true;
 	}
@@ -274,7 +302,9 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 		size_t j = 0;
 		if (count_spaces == 4) {
-			while (buffer.c_str()[i] && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n' && buffer.c_str()[i] != ' ') {
+			if (buffer.c_str()[i] == ':')
+				i++;
+			while (buffer.c_str()[i] && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n') {
 				username.resize(j + 1);
 				username[j] = buffer.c_str()[i];
 				j++;
@@ -288,7 +318,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				}
 			}
 			it->second.username = username;
-			it->second.isusername = true; // Welcome message
+			it->second.isusername = true;
 			format = RPL_WELCOME(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
 			format = RPL_YOURHOST(it->second.nickname, it->second.client_ip);
@@ -297,9 +327,11 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			format = RPL_MYINFO(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
+			format = RPL_HELP(it->second.nickname, it->second.client_ip);
+			mySend(format.c_str(), it->first);
 		}
 		else {
-			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing arguments\r\t\n";
+			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing or too many arguments\r\t\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}

@@ -9,8 +9,7 @@ int	main(int ac, char *av[])
 	if (srvr.parseInput())
 		return 1;
 
-	if (srvr.start())
-		return 1;
+	srvr.start();
 
 	return 0;
 }
