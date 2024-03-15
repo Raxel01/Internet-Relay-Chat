@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 06:38:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/14 17:23:13 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/15 15:00:49 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ void    PassworMatcher(int __fd, std::vector<ChatRoom>::iterator& iter, std::str
             BroadcastMessage(user, ChannelName, iter, response); //Broadcast  a new user is comming.
     }
         else{ // Send wrong password
-                    std::string response = MYhost::GetHost() + " " + "475" + " " + user + " " + ChannelName + ": Wrong Channel Password (+k)\n";
+                    std::string response = ":" + MYhost::GetHost() + " " + "475" + " " + user + " " + ChannelName + ": Wrong Channel Password (+k)\n";
                         send(__fd, response.c_str(), response.length(), 0);
                     }
         }
@@ -165,7 +165,7 @@ void    JoinWithKey(int __fd, std::string &user, std::string &ChannelName, std::
 BroadcastMessage(user, (*iter)._RoomName, iter, response); //Broadcast  a new user is comming.
         }
         else{//1 INVITE ONLY
-                    std::string response = MYhost::GetHost() +  " 473 " +  user + " " + (*iter)._RoomName + " :Channel is Invite only (+i)\n" ;            
+                    std::string response = ":" + MYhost::GetHost() +  " 473 " +  user + " " + (*iter)._RoomName + " :Channel is Invite only (+i)\n" ;            
                             send(__fd, response.c_str(), response.length(), 0);
                     }//1
         }
@@ -174,17 +174,17 @@ BroadcastMessage(user, (*iter)._RoomName, iter, response); //Broadcast  a new us
                         }//2  
             }
                 else{//3 Excedlimit :
-                            std::string response = MYhost::GetHost() +  " 471 " + user + " " + (*iter)._RoomName + " :This channel exceeds limits\n";
+                            std::string response = ":" + MYhost::GetHost() +  " 471 " + user + " " + (*iter)._RoomName + " :This channel exceeds limits\n";
                                 send(__fd, response.c_str(), response.length(), 0);
                             }// 3
                 }
                     else{// 4Banned :
-                                std::string response = MYhost::GetHost() + " 474 " +  user + " " + (*iter)._RoomName + " :You are an active ban on this channel\n";
+                                std::string response = ":" + MYhost::GetHost() + " 474 " +  user + " " + (*iter)._RoomName + " :You are an active ban on this channel\n";
                                     send(__fd, response.c_str(), response.length(), 0);
                                 }//4
                     }
                         else{ //5 alreadyMember :
-                                    std::string response = MYhost::GetHost() + " 443 " + user + " " + (*iter)._RoomName + " :You are already on channel\n";
+                                    std::string response = ":" + MYhost::GetHost() + " 443 " + user + " " + (*iter)._RoomName + " :You are already on channel\n";
                                         send(__fd, response.c_str(), response.length(), 0);
                                     } //5
 }
@@ -219,7 +219,7 @@ void    JoinStart(int __fd, std::string& clientMsg, Myvector& Channels, Myvector
             }else
                 throw InvalidChannelName();
         }catch (std::exception& e){
-                std::string response =  MYhost::GetHost() + " 476 " +  Server::ServerClients.at(__fd).nickname + " " + Channels.at(i) + " :Invalid channel name\n";
+                std::string response =  ":" + MYhost::GetHost() + " 476 " +  Server::ServerClients.at(__fd).nickname + " " + Channels.at(i) + " :Invalid channel name\n";
                     send(__fd, response.c_str(), response.length(), 0);
                         e.what();    
                 }

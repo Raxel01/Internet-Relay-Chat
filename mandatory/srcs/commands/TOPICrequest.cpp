@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 04:35:20 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 20:46:14 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:43:47 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 // Pay Attention You should Change a lot of things in the Code
 void            TOPICprocessor(size_t &OccurSpace, std::string& channelName ,std::string& clientMsg, int __fd, std::string& NEWTOPIC)
 {
-    Roomiter    RoomObj;
+    Roomiter    RoomObj ;
     std::string response;
     static_cast<void> (clientMsg);
     

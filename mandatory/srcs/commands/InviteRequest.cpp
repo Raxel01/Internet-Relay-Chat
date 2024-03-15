@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/03 09:57:31 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 20:45:44 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:53:54 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ void    FilterRequest(std::string& response, int& __fd, std::string& CHANNEL, st
                 throw Ex_CHANOPRIVSNEEDED();
         }
         if ((*RoomObj).IsalreadyMember(USER) == true){
-            response = MYhost::GetHost() + " 443 " + Server::ServerClients.at(__fd).nickname + " " + CHANNEL + " :User already on channel\n";
+            response = ":" + MYhost::GetHost() + " 443 " + Server::ServerClients.at(__fd).nickname + " " + CHANNEL + " :User already on channel\n";
                 throw EX_ALREADYINCHANNEL();
         }
         if ((*RoomObj).IsInviteList(USER) == true){
-            response = MYhost::GetHost() + " 999 " + Server::ServerClients.at(__fd).nickname + " " + CHANNEL + " :User already Invited To channel\n";
+            response = ":" + MYhost::GetHost() + " 999 " + Server::ServerClients.at(__fd).nickname + " " + CHANNEL + " :User already Invited To channel\n";
                 throw EX_DUPLICATE_INVITE();
         }
 }

@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 01:18:41 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 20:45:50 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/15 14:28:33 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,10 +157,8 @@ void        KickMessage(std::string& clientMsg, int __fd)
             }     
             index++;
         }
-        if (Reason.empty())
+        if (Reason.empty() || Reason.compare(": ") == 0)
             Reason = "Admin is a Dictator";
-
         KickProcessor(channelName, userList, __fd, Reason);
     }
 }
-
