@@ -357,7 +357,6 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 		}
 		asString = buffer;
         ReforMessage::GlobalReform(asString);
-		std::cout << "|" << ReforMessage::FinalMessage << "|" << std::endl;
         MediatorCommand(ReforMessage::FinalMessage, it->first);
 	}
 }
