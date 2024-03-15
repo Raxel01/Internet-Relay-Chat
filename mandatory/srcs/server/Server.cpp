@@ -117,7 +117,7 @@ int	Server::start()
 						}
 						// In case recv() fails, delete client socket from everywhere
 						// Or QUIT command entered by client
-						else if (rcvlen <= 0 || strcmp(buffer, "QUIT\n") == 0 || strcmp(buffer, "QUIT\r\n") == 0) {//ADD : may add if the buffer = to "QUIT" in first Field
+						else if (rcvlen <= 0 || strncmp(buffer, "QUIT", 4) == 0) {//ADD : may add if the buffer = to "QUIT" in first Field
 							it = findSocket(sockets[i].fd);
 							std::cout << RED << " * Client " << PURPLE << it->second.client_ip << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
@@ -347,7 +347,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		Bot	emmet(it->first, buffer.c_str(), Server::_ipaddress);
+		Bot	emmet(it->first, buffer.c_str(), it->second.client_ip);
 	}
 	else {
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {
