@@ -6,7 +6,7 @@
 #    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/03/15 01:06:44 by mbachar          ###   ########.fr        #
+#    Updated: 2024/03/15 21:02:21 by mbachar          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,15 +15,15 @@
 #####################################################
 NAME		=	ircserv
 
-SERVERPATH	=	./mandatory/srcs/server
+SERVERPATH	=	./IRC/srcs/server
 
-BOTPATH			=	./mandatory/srcs/bot
+BOTPATH		=	./IRC/srcs/bot
 
-CMDPATH		=	./mandatory/srcs/commands
+CMDPATH		=	./IRC/srcs/commands
 
-HEADERS		=	./mandatory/headers
+HEADERS		=	./IRC/headers
 
-SRC			=	./mandatory/main.cpp \
+SRC			=	./IRC/main.cpp \
 					$(SERVERPATH)/Server.cpp \
 					$(SERVERPATH)/Client.cpp \
 					$(SERVERPATH)/utils.cpp \
