@@ -6,7 +6,7 @@
 /*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/14 02:34:10 by mbachar          ###   ########.fr       */
+/*   Updated: 2024/03/15 00:57:26 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include	<string>
 # include	<sstream>
 # include 	"ReforMessage.hpp"
+# include 	"Bot.hpp"
 
 # define	RESET	"\x1b[0m"
 # define	GREEN	"\x1b[1;32m"
