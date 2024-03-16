@@ -138,7 +138,7 @@ void	Server::start()
 						}
 						// In case recv() fails, delete client socket from everywhere
 						// Or QUIT command entered by client
-						else if (rcvlen <= 0 || strncmp(buffer, "QUIT", 4) == 0) {//ADD : may add if the buffer = to "QUIT" in first Field
+						else if (rcvlen <= 0 || strncmp(buffer, "QUIT", 4) == 0) {//ADD : may add if the buffer = to "QUIT"
 							it = findSocket(sockets[i].fd);
 							std::cout << RED << " * Client " << PURPLE << it->second.client_ip << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
@@ -251,6 +251,12 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			}
 		}
 		nickname = extractKey(buffer.c_str());
+		if (nickname.empty()) {
+			format = ":" + it->second.client_ip + " 431 " + " " + tostring(it->first) + " :Missing nickname\r\t\n"; // Error code should be changed
+			mySend(format.c_str(), it->first);
+			return ;
+
+		}
 		if (nickname.length() > 9) {
 			format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname length should be less than 9 characters\r\t\n"; // Error code should be changed
 			mySend(format.c_str(), it->first);
@@ -301,7 +307,8 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				break;
 		}
 		size_t j = 0;
-		if (count_spaces == 4) {
+		if (count_spaces == 4 && i < std::strlen(buffer.c_str())) {//NEW CHANGES
+
 			if (buffer.c_str()[i] == ':')
 				i++;
 			while (buffer.c_str()[i] && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n') {
@@ -310,8 +317,10 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				j++;
 				i++;
 			}
+
 			for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 				if (username == it_->second.username) {
+
 					format = ":" + it->second.client_ip + " 433 " + " " + tostring(it->first) + " :Someone in the server is already using that username\r\t\n";
 					mySend(format.c_str(), it->first);
 					return ;
@@ -331,7 +340,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 		}
 		else {
-			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing or too many arguments\r\t\n";
+			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing or too many arguments\r\t\n"; //WHY
 			mySend(format.c_str(), it->first);
 			return ;
 		}

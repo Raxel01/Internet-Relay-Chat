@@ -4,7 +4,7 @@ void	error(std::string errorMessage) {std::cerr << RED << " * Error : " << RESET
 
 std::string	extractKey(const char	*buffer)
 {
-	std::string	key;
+	std::string	key  ;
 	int			i = 4;
 	int			j = 0;
 

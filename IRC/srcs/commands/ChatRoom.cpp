@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../headers/ChatRoom.hpp"
-
+#include <errno.h>
 
 
 std::vector<ChatRoom>   GlobalServerData::ServerChannels; // all serverchannel
