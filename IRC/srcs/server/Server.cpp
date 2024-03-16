@@ -29,7 +29,7 @@ int	Server::parseInput()
 	return 0;
 }
 
-void	Server::start()
+int	Server::start()
 {
 	signal(SIGPIPE, SIG_IGN);
 	char 		hostbuffer[256];
@@ -43,19 +43,13 @@ void	Server::start()
 
 	// Get the hostname
     if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
-	{
-        error("failed to return host name of the current process.");
-		exit (1);
-	}
+        return (error("failed to return host name of the current process."), 1);
 
     // Function's name points to it's functionality :D
     struct hostent *host_entry;
     host_entry = gethostbyname(hostbuffer);
     if (host_entry == NULL)
-	{
-        error("failed to get host by name.");
-		exit (1);
-	}
+        return (error(""), 1);
 
     // Convert IPv4 address from binary to text form
     Server::_ipaddress = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
@@ -63,38 +57,23 @@ void	Server::start()
 	// Create a socket node for the server
 	int	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
-	{
-		error("socket function couldn't create an endpoint for communication.");
-		exit (1);
-	}
+		return (error("socket function couldn't create an endpoint for communication."), 1);
 
 	// Set socket opt so we can re-use it in case of abort
 	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-	{
-		error("socket was unable to reuse the ip address.");
-		exit (1);
-	}
+		return (error("socket was unable to reuse the ip address."), 1);
 
 	// Bind the socket to ip adress and port number
 	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1)
-	{
-		error("socket was unable to bind to ip adress and port number.");
-		exit (1);
-	}
+		return (error("socket was unable to bind to ip adress and port number."), 1);
 
 	// Set socket to non-blocking mode
 	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1)
-	{
-		error("failed to set the socket to non-blocking mode.");
-		exit (1);
-	}
+		return (error("failed to set the socket to non-blocking mode."), 1);
 
 	// Listen to incoming connections
 	if (listen(serverSocket, 128) == -1)
-	{
-		error("socket could not listen to incoming connections.");
-		exit (1);
-	}
+		return (error("socket could not listen to incoming connections."), 1);
 
 	std::cout << GREEN << " * Server started, listening on port " << PURPLE << _port << GREEN << " for any incoming connections." << RESET << std::endl;
 
@@ -138,7 +117,7 @@ void	Server::start()
 						}
 						// In case recv() fails, delete client socket from everywhere
 						// Or QUIT command entered by client
-						else if (rcvlen <= 0 || strncmp(buffer, "QUIT", 4) == 0) {//ADD : may add if the buffer = to "QUIT"
+						else if (rcvlen <= 0 || strncmp(buffer, "QUIT", 4) == 0) {//ADD : may add if the buffer = to "QUIT" in first Field
 							it = findSocket(sockets[i].fd);
 							std::cout << RED << " * Client " << PURPLE << it->second.client_ip << RESET << " has disconnected." << std::endl;
 							std::vector<pollfd>::iterator it_;
@@ -184,9 +163,10 @@ void	Server::start()
 			}
 		}
 		catch (std::exception &e) {
-			error(e.what());
+			return (error(e.what()), 1);
 		}
 	}
+    return 0;
 }
 
 void	Server::processClientData(std::string buffer, std::map<int, Client>::iterator &it)
@@ -203,17 +183,10 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer.c_str()) <= 5) {
+		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
 			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing password\r\n";
 			mySend(format.c_str(), it->first);
 			return ;
-		}
-		for (size_t i = 5; i < buffer.size(); i++) {
-			if (buffer[i] == ' ' || buffer[i] == '\t') {
-				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Password musn't contain whitespaces\r\n";
-				mySend(format.c_str(), it->first);
-				return ;
-			}
 		}
 		password = extractKey(buffer.c_str());
 		if (password != _password) {
@@ -222,8 +195,6 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			return ;
 		}
 		if (password == _password) {
-			format = "* Success : You have entered the correct password.\n* Hint    : Enter now (NICK your_nickname) to set yourself a nickname.\n";
-			mySend(format.c_str(), it->first);
 			it->second.isRegistred = true;
 		}
 	}
@@ -238,27 +209,14 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		if (std::strlen(buffer.c_str()) < 5) {
+		if (std::strlen(buffer.c_str()) == 4 || std::strlen(buffer.c_str()) == 5) {
 			format = ":" + it->second.client_ip + " 431 " + " " + tostring(it->first) + " :Missing nickname\r\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		for (size_t i = 5; i < buffer.size(); i++) {
-			if (buffer[i] == ' ' || buffer[i] == '\t') {
-				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\n";
-				mySend(format.c_str(), it->first);
-				return ;
-			}
-		}
 		nickname = extractKey(buffer.c_str());
-		if (nickname.empty()) {
-			format = ":" + it->second.client_ip + " 431 " + " " + tostring(it->first) + " :Missing nickname\r\n"; // Error code should be changed
-			mySend(format.c_str(), it->first);
-			return ;
-
-		}
 		if (nickname.length() > 9) {
-			format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname length should be less than 9 characters\r\n"; // Error code should be changed
+			format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname length must be less or equal to 9 characters\r\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
@@ -267,6 +225,13 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
+		for (size_t i = 0; i < nickname.size(); i++) {
+			if (nickname[i] == ' ' || nickname[i] == '\t') {
+				format = ":" + it->second.client_ip + " 432 " + " " + tostring(it->first) + " :Nickname musn't contain whitespaces\r\n";
+				mySend(format.c_str(), it->first);
+				return ;
+			}
+		}
 		for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 			if (nickname == it_->second.nickname) {
 				format = ":" + it->second.client_ip + " 433 " + " " + tostring(it->first) + " :Someone in the server is already using that nickname\r\n";
@@ -274,12 +239,10 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				return ;
 			}
 		}
-		format = "* Success : You have successfully set yourself a nickname.\n* Hint    : Enter now (USER your_username 0 * your_realname) to set yourself a username.\n";
-			mySend(format.c_str(), it->first);
 		it->second.nickname = nickname;
 		it->second.isnickname = true;
 	}
-	else if (!std::strncmp(buffer.c_str(), "USER ", 5) || !std::strncmp(buffer.c_str(), "USER\t", 5)) { // Some missing parsing here
+	else if (!std::strncmp(buffer.c_str(), "USER ", 5) || !std::strncmp(buffer.c_str(), "USER\t", 5)) {
 		if (!it->second.isRegistred) {
 			format = ":" + it->second.client_ip + " 451 " + " " + tostring(it->first) + " :You need to enter the server's password first\r\n";
 			mySend(format.c_str(), it->first);
@@ -307,27 +270,28 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 				break;
 		}
 		size_t j = 0;
-		if (count_spaces == 4 && i < std::strlen(buffer.c_str())) {
-
-			if (buffer.c_str()[i] == ':')
-				i++;
-			while (buffer.c_str()[i] && buffer.c_str()[i] != '\r' && buffer.c_str()[i] != '\t' && buffer.c_str()[i] != '\n') {
+		if (count_spaces == 4) {
+			while (buffer.c_str()[i]) {
 				username.resize(j + 1);
 				username[j] = buffer.c_str()[i];
 				j++;
 				i++;
 			}
-
+			size_t n_pos = username.find('\n');
+			if (n_pos != std::string::npos)
+				username.resize(n_pos);
+			size_t r_pos = username.find('\r');
+			if (r_pos != std::string::npos)
+				username.resize(r_pos);
 			for (std::map<int, Client>::iterator it_ = Server::ServerClients.begin(); it_ != Server::ServerClients.end(); it_++) {
 				if (username == it_->second.username) {
-
 					format = ":" + it->second.client_ip + " 433 " + " " + tostring(it->first) + " :Someone in the server is already using that username\r\n";
 					mySend(format.c_str(), it->first);
 					return ;
 				}
 			}
 			it->second.username = username;
-			it->second.isusername = true;
+			it->second.isusername = true; // Welcome message
 			format = RPL_WELCOME(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
 			format = RPL_YOURHOST(it->second.nickname, it->second.client_ip);
@@ -336,11 +300,9 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			format = RPL_MYINFO(it->second.nickname, it->second.client_ip);
 			mySend(format.c_str(), it->first);
-			format = RPL_HELP(it->second.nickname, it->second.client_ip);
-			mySend(format.c_str(), it->first);
 		}
 		else {
-			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing or too many arguments\r\n";
+			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing arguments\r\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
@@ -389,20 +351,6 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			return ;
 		}
 		Bot	emmet(it->first, buffer.c_str(), it->second.client_ip);
-	}
-	else if (!std::strcmp(buffer.c_str(), "PRINT\n")) {
-		for (std::map<int, Client>::iterator ite = ServerClients.begin(); ite != ServerClients.end(); ite++) {
-			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
-			std::cout << GREEN << " * Client Socket   = " << RESET << ite->first << std::endl;
-			std::cout << GREEN << " * Client IpAdress = " << RESET << ite->second.client_ip << std::endl;
-			std::cout << GREEN << " * Client NickName = " << RESET << ite->second.nickname << std::endl;
-			std::cout << GREEN << " * Client UserName = " << RESET << ite->second.username << std::endl;
-			if (ite->second.isRegistred == true)
-				std::cout << GREEN << " * Client Status   = " << RESET << "Registred" << std::endl;
-			else
-				std::cout << GREEN << " * Client Status   = " << RESET << "Not Registred" << std::endl;
-			std::cout << PURPLE << "====================================================================" << RESET << std::endl;
-		}
 	}
 	else {
 		if (!it->second.isRegistred || !it->second.isnickname || !it->second.isusername) {

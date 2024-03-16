@@ -4,11 +4,11 @@ void	error(std::string errorMessage) {std::cerr << RED << " * Error : " << RESET
 
 std::string	extractKey(const char	*buffer)
 {
-	std::string	key  ;
+	std::string	key;
 	int			i = 4;
 	int			j = 0;
 
-	while (buffer[i] && (buffer[i] == ' ' || buffer[i] == '\t'))
+	while (buffer[i] && (buffer[i] == '\t' || buffer[i] == ' '))
 		i++;
 	while (buffer[i]) {
 		key.resize(j + 1);
@@ -16,10 +16,12 @@ std::string	extractKey(const char	*buffer)
 		j++;
 		i++;
 	}
-	if (key[key.length() - 1] == '\n')
-		key.resize(j - 1);
-	if (key[key.length() - 1] == '\r')
-		key.resize(j - 2);
+	size_t n_pos = key.find('\n');
+	if (n_pos != std::string::npos)
+		key.resize(n_pos);
+	size_t r_pos = key.find('\r');
+	if (r_pos != std::string::npos)
+		key.resize(r_pos);
 	return key;
 }
 

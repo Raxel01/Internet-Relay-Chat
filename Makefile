@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+         #
+#    By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/24 19:18:19 by abait-ta          #+#    #+#              #
-#    Updated: 2024/03/16 20:28:34 by mbachar          ###   ########.fr        #
+#    Updated: 2024/03/15 17:15:47 by abait-ta         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ NAME		=	ircserv
 
 SERVERPATH	=	./IRC/srcs/server
 
-BOTPATH		=	./IRC/srcs/bot
+BOTPATH			=	./IRC/srcs/bot
 
 CMDPATH		=	./IRC/srcs/commands
 
