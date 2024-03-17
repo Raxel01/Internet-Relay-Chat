@@ -258,24 +258,41 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 			return ;
 		}
-		int count_spaces = 0;
-		size_t i = 0;
-		for (i = 0; i < std::strlen(buffer.c_str()); i++) {
-			if (buffer.c_str()[i] == ' ' || buffer.c_str()[i] == '\t') {
-				count_spaces++;
-				while (buffer.c_str()[i] && (buffer.c_str()[i] == ' ' || buffer.c_str()[i] == '\t'))
-					i++;
+		bool status = false;
+		int	i = 0;
+		int	words_count = 0;
+		while (buffer[i]) {
+			if (buffer[i] == ' ' || buffer[i] == '\t')
+				status = true;
+			else if (status) {
+				status = false;
+				words_count++;
 			}
-			if (count_spaces == 4)
-				break;
+			i++;
 		}
 		size_t j = 0;
-		if (count_spaces == 4) {
-			while (buffer.c_str()[i]) {
-				username.resize(j + 1);
-				username[j] = buffer.c_str()[i];
+		i = buffer.length() - 1;
+		std::string	rev_username;
+		if (words_count == 4) {
+			// Put this chunk of code in a separate function
+			while (i > 0 && buffer[i] != ' ' && buffer[i] != '\t') {
+				rev_username.resize(j + 1);
+				rev_username[j] = buffer.c_str()[i];
 				j++;
-				i++;
+				i--;
+			}
+			j = 0;
+			i = rev_username.length() - 1;
+			while (i > 0) {
+				username.resize(j + 1);
+				username[j] = rev_username[i];
+				j++;
+				i--;
+			}
+			if (username.empty()) {
+				format = ":" + it->second.client_ip + " 431 " + " " + tostring(it->first) + " :Missing username\r\n";
+				mySend(format.c_str(), it->first);
+				return ;
 			}
 			size_t n_pos = username.find('\n');
 			if (n_pos != std::string::npos)
@@ -302,7 +319,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 			mySend(format.c_str(), it->first);
 		}
 		else {
-			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing arguments\r\n";
+			format = ":" + it->second.client_ip + " 461 " + " " + tostring(it->first) + " :Missing or too many arguments\r\n";
 			mySend(format.c_str(), it->first);
 			return ;
 		}
