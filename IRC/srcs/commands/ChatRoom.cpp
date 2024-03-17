@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/13 21:52:00 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/17 02:10:37 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ void            ChatRoom::getelems(){
     
     std::cout << "^^^^^^^^^^^Members^^^^^^^^^" << std::endl;
     
+
+    
     it = _BannedUsers.begin();
     while (it != _BannedUsers.end())
     {
@@ -82,7 +84,16 @@ void            ChatRoom::getelems(){
         it++;
     }
     std::cout << "^^^^^^^^^^^^^Banned Users^^^^^^^^^^^^^^"<< std::endl;
+    
+      it = _InviteList.begin();
+    while (it != _InviteList.end())
+    {
+        std::cout << "INVITED : " << *it<< std::endl;
+        it++;
+    }
+    std::cout << "^^^^^^^^^^^INVITED USERS^^^^^^^^^" << std::endl;
     std::cout << "RoomNAME => " << _RoomName << std::endl;
+    
     std::cout << "Keysstatus : ";
     if (keyStatus == true)
         std::cout << " TRUE kEY :|" << _ChatKey << "|"<< std::endl;

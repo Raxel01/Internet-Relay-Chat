@@ -8,8 +8,6 @@ int	main(int ac, char *av[])
 	Server	srvr(av[1], av[2]);
 	if (srvr.parseInput())
 		return 1;
-
 	srvr.start();
-
 	return 0;
 }
