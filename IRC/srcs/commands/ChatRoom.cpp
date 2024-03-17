@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/17 02:10:37 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/17 21:14:07 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,9 +240,10 @@ void    ChatRoom::BanThisUser(std::string User)
     else if (IsMediator(User) == true)
     {
         DEQUE::iterator  OPFINDER = _Mediators.begin();
-        while (OPFINDER != _Mediators.end())
-        {
-            if ((*OPFINDER) == User)
+        std::string TOBAN("@" + User);
+        
+        while (OPFINDER != _Mediators.end()){
+            if ((*OPFINDER) == TOBAN)
                 break;
             OPFINDER++;
         }
