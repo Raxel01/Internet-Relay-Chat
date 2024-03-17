@@ -6,13 +6,11 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/25 12:30:51 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/17 21:14:07 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/17 21:54:56 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../headers/ChatRoom.hpp"
-
-
 
 std::vector<ChatRoom>   GlobalServerData::ServerChannels; // all serverchannel
 
@@ -69,18 +67,16 @@ void            ChatRoom::getelems(){
     
     it = _Members.begin();
     while (it != _Members.end()){
-        std::cout << "Members : " << *it<< std::endl;
+        std::cout << "Members : " << *it << std::endl;
         it++;
     }
     
     std::cout << "^^^^^^^^^^^Members^^^^^^^^^" << std::endl;
     
-
-    
     it = _BannedUsers.begin();
     while (it != _BannedUsers.end())
     {
-        std::cout << "Banned : " << *it<< std::endl;
+        std::cout << "Banned : " << *it << std::endl;
         it++;
     }
     std::cout << "^^^^^^^^^^^^^Banned Users^^^^^^^^^^^^^^"<< std::endl;
@@ -317,10 +313,12 @@ void           ChatRoom::UpgradeToChanoP(std::string USER)
 
 //Make an Admin a normal User
 void            ChatRoom::ToRegularUser (std::string USER){
-    
+
     DEQUE::iterator Iter = _Mediators.begin();
+    std::string Down("@" + USER);
+    
     while (Iter != _Mediators.end()){
-        if (*Iter == USER)
+        if (*Iter == Down)
             break;
         Iter++;
     }
