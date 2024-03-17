@@ -22,6 +22,8 @@ int	Server::parseInput()
 		return (error("port should be between 1024 and 65565."), 1);
 
 	// Parsing Password
+	if (_password.empty())
+			return (error("password is empty."), 1);
 	for (size_t i = 0; i < _password.length(); i++)
 		if (_password[i] == ' ' || _password[i] == '\t')
 			return (error("password should not contain whitespaces."), 1);
