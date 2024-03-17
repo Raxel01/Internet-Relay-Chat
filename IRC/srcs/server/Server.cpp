@@ -29,7 +29,7 @@ int	Server::parseInput()
 	return 0;
 }
 
-int	Server::start()
+void	Server::start()
 {
 	signal(SIGPIPE, SIG_IGN);
 	char 		hostbuffer[256];
@@ -43,13 +43,13 @@ int	Server::start()
 
 	// Get the hostname
     if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
-        return (error("failed to return host name of the current process."), 1);
+        error("failed to return host name of the current process.");
 
     // Function's name points to it's functionality :D
     struct hostent *host_entry;
     host_entry = gethostbyname(hostbuffer);
     if (host_entry == NULL)
-        return (error(""), 1);
+        error("could not get host by name.");
 
     // Convert IPv4 address from binary to text form
     Server::_ipaddress = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
@@ -57,23 +57,23 @@ int	Server::start()
 	// Create a socket node for the server
 	int	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1)
-		return (error("socket function couldn't create an endpoint for communication."), 1);
+		error("socket function couldn't create an endpoint for communication.");
 
 	// Set socket opt so we can re-use it in case of abort
 	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
-		return (error("socket was unable to reuse the ip address."), 1);
+		error("socket was unable to reuse the ip address.");
 
 	// Bind the socket to ip adress and port number
 	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1)
-		return (error("socket was unable to bind to ip adress and port number."), 1);
+		error("socket was unable to bind to ip adress and port number.");
 
 	// Set socket to non-blocking mode
 	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1)
-		return (error("failed to set the socket to non-blocking mode."), 1);
+		error("failed to set the socket to non-blocking mode.");
 
 	// Listen to incoming connections
 	if (listen(serverSocket, 128) == -1)
-		return (error("socket could not listen to incoming connections."), 1);
+		error("socket could not listen to incoming connections.");
 
 	std::cout << GREEN << " * Server started, listening on port " << PURPLE << _port << GREEN << " for any incoming connections." << RESET << std::endl;
 
@@ -163,10 +163,9 @@ int	Server::start()
 			}
 		}
 		catch (std::exception &e) {
-			return (error(e.what()), 1);
+			error(e.what());
 		}
 	}
-    return 0;
 }
 
 void	Server::processClientData(std::string buffer, std::map<int, Client>::iterator &it)

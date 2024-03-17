@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbachar <mbachar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/24 19:37:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/15 16:54:45 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/17 01:48:30 by mbachar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ class Server
 		// Methods
 		Server(std::string port, std::string password);
 		int			parseInput();
-		int			start();
+		void		start();
 		void		addClient(int clientSocket, std::string client_ip);
 		void		processClientData(std::string buffer, std::map<int, Client>::iterator &it);
 		std::map<int, Client>::iterator	findSocket(int clientSocket);
