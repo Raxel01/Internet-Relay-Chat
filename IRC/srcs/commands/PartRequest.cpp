@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 03:17:08 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/15 14:35:10 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/17 01:33:30 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,10 +116,8 @@ void    PartMessage(std::string& clientMsg, int __fd)
             }
         index++;
         }
-        std::cout << "|"<< Reason << "|"<<std::endl;
         if (Reason.empty())
             Reason = " Just Leaving...";
-        std::cout << "|"<< Reason << "|"<<std::endl;
         DEQUE Channels;
         FullChannelList(channelList, Channels);
         PartProcessor(Channels, __fd, Reason);
