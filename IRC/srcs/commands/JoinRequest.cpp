@@ -6,7 +6,7 @@
 /*   By: abait-ta <abait-ta@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 06:38:37 by abait-ta          #+#    #+#             */
-/*   Updated: 2024/03/17 02:34:06 by abait-ta         ###   ########.fr       */
+/*   Updated: 2024/03/18 02:49:47 by abait-ta         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ void    JoinStart(int __fd, std::string& clientMsg, Myvector& Channels, Myvector
                 if(FindInGlobalChannel(Channels.at(i)) == TOBE_BUILDED ){ 
                     ChatRoom BuildRoom(Server::ServerClients.at(__fd).nickname, Channels.at(i));
                 std::string response = ":" + Server::ServerClients.at(__fd).nickname + "!~" + Server::ServerClients.at(__fd).username + "@" + Server::ServerClients.at(__fd).client_ip + " JOIN " + BuildRoom._RoomName + "\n";
-                    response += ":" + MYhost::GetHost() + " 353 " + Server::ServerClients.at(__fd).nickname + " = " + BuildRoom._RoomName + BuildRoom.MembersList() + "\n";
+                    response += ":" + MYhost::GetHost() + " 353 " + Server::ServerClients.at(__fd).nickname + " = " + BuildRoom._RoomName +" "+ BuildRoom.MembersList() + "\n";
                 response += ":" + MYhost::GetHost() + " 366 " + Server::ServerClients.at(__fd).nickname + " " + BuildRoom._RoomName + " :End of NAMES list\n";
             send(__fd, response.c_str(), response.length(), 0);
         GlobalServerData::ServerChannels.push_back(BuildRoom);
