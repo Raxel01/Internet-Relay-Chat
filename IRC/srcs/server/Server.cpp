@@ -44,38 +44,52 @@ void	Server::start()
 	server_address.sin_port			= htons(std::atoi(_port.c_str()));
 
 	// Get the hostname
-    if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
+    if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1) {
         error("failed to return host name of the current process.");
+		exit (1);
+	}
 
     // Function's name points to it's functionality :D
     struct hostent *host_entry;
     host_entry = gethostbyname(hostbuffer);
-    if (host_entry == NULL)
+    if (host_entry == NULL) {
         error("could not get host by name.");
+		exit (1);
+	}
 
     // Convert IPv4 address from binary to text form
     Server::_ipaddress = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
 
 	// Create a socket node for the server
 	int	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (serverSocket == -1)
+	if (serverSocket == -1) {
 		error("socket function couldn't create an endpoint for communication.");
+		exit (1);
+	}
 
 	// Set socket opt so we can re-use it in case of abort
-	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
 		error("socket was unable to reuse the ip address.");
+		exit (1);
+	}
 
 	// Bind the socket to ip adress and port number
-	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1)
+	if (bind(serverSocket, (sockaddr *)&server_address, sizeof(server_address)) == -1) {
 		error("socket was unable to bind to ip adress and port number.");
+		exit (1);
+	}
 
 	// Set socket to non-blocking mode
-	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(serverSocket, F_SETFL, O_NONBLOCK) == -1) {
 		error("failed to set the socket to non-blocking mode.");
+		exit (1);
+	}
 
 	// Listen to incoming connections
-	if (listen(serverSocket, 128) == -1)
+	if (listen(serverSocket, 128) == -1) {
 		error("socket could not listen to incoming connections.");
+		exit (1);
+	}
 
 	std::cout << GREEN << " * Server started, listening on port " << PURPLE << _port << GREEN << " for any incoming connections." << RESET << std::endl;
 
