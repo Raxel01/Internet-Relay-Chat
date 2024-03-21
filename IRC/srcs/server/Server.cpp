@@ -191,7 +191,7 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 	std::string	username;
 	std::string	format;
 	std::string asString;
-
+	// std::cout << "|" << buffer << "|"<< std::endl;
 	if (!std::strncmp(buffer.c_str(), "PASS ", 5) || !std::strncmp(buffer.c_str(), "PASS\t", 5)) {
 		if (it->second.isRegistred) {
 			format = ":" + it->second.client_ip + " 462 " + " " + tostring(it->first) + " :You are already registred\r\n";
@@ -322,6 +322,8 @@ void	Server::processClientData(std::string buffer, std::map<int, Client>::iterat
 					return ;
 				}
 			}
+			std::cout << "username : " << username << std::endl;
+			std::cout << "nickname :"  <<  nickname <<std::endl;
 			it->second.username = username;
 			it->second.isusername = true; // Welcome message
 			format = RPL_WELCOME(it->second.nickname, it->second.client_ip);
